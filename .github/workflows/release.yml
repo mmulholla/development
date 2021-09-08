@@ -32,13 +32,23 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Set up Python scripts
+      - name: Set up Python scripts on moan branch
         run: |
-          # set up python scripts on pr-branch
+          # set up python scripts
           echo "set up python script in $PWD"
           python3 -m venv ve1
           cd scripts && ../ve1/bin/pip3 install -r requirements.txt && cd ..
           cd scripts && ../ve1/bin/python3 setup.py install && cd ..
+
+      - name: Set up Python scripts in pr-branch
+        working-directory: ./pr-branch
+        run: |
+          # set up python scripts
+          echo "set up python script in $PWD"
+          python3 -m venv ve1
+          cd scripts && ../ve1/bin/pip3 install -r requirements.txt && cd ..
+          cd scripts && ../ve1/bin/python3 setup.py install && cd ..
+
 
       - name: Check if only release file in PR
         id: check_version_in_PR
