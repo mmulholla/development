@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened, edited, ready_for_review, labeled]
 
 jobs:
-  chart-workflow release:
+  chart-workflow-release:
     name: Chart Workflow Release
     runs-on: ubuntu-20.04
     if: |
