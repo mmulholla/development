@@ -11,6 +11,9 @@ RELEASE_INFO_FILE="release/release_info.json"
 
 def _get_release_info(directory):
 
+    if not directory:
+        directory = "./"
+
     data = {}
     with open(f"{directory}{RELEASE_INFO_FILE}",'r') as json_file:
         data = json.load(json_file)
@@ -20,6 +23,11 @@ def _get_release_info(directory):
 def get_version(directory):
     info = _get_release_info(directory)
     return info["version"]
+
+def get_info(directory):
+    info = _get_release_info(directory)
+    return info["info"]
+
 
 def get_replaces(repo,directory):
     info = _get_release_info(directory)

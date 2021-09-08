@@ -27,6 +27,7 @@ import argparse
 import json
 import requests
 import semver
+import release_info
 
 VERSION_FILE = "release/release_info.json"
 
@@ -82,22 +83,24 @@ def main():
     args = parser.parse_args()
     if args.api_url and check_if_only_version_file_is_modified(args.api_url):
         ## should be on PR branch
-        version_info = get_version_info()
-        print(f'[INFO] Release found in PR files : {version_info["version"]}.')
-        print(f'::set-output name=PR_version::{version_info["version"]}')
-        print(f'::set-output name=PR_release_info::{version_info["release-info"]}')
+        version = release_info.get_version()
+        version_info = release_info.get_info()
+        print(f'[INFO] Release found in PR files : {version}.')
+        print(f'::set-output name=PR_version::{version}')
+        print(f'::set-output name=PR_release_info::{version_info}')
         print(f'::set-output name=PR_includes_release::true')
-        make_release_body(version_info["version"],version_info["release-info"])
+        make_release_body(version,version_info)
     else:
-        version_info = get_version_info()
+        version = release_info.get_version()
+        version_info = release_info.get_info()
         if args.version:
             # should be on main branch
-            if semver.compare(args.version,version_info["version"]) > 0 :
-                print(f'[INFO] Release {args.version} found in PR files is newer than: {version_info["version"]}.')
+            if semver.compare(args.version,version) > 0 :
+                print(f'[INFO] Release {args.version} found in PR files is newer than: {version}.')
                 print("::set-output name=updated::true")
             else:
-                print(f'[INFO] Release found in PR files is not new  : {version_info["version"]}.')
+                print(f'[INFO] Release found in PR files is not new  : {version_info}.')
         else:
-            print(f'::set-output name=PR_version::{version_info["version"]}')
-            print(f'::set-output name=PR_release_image::{version_info["quay-image"]}')
+            print(f'::set-output name=PR_version::{version}')
+            print(f'::set-output name=PR_release_image::{version_info}')
             print("[INFO] PR contains non-release files.")
