@@ -83,16 +83,16 @@ def main():
     args = parser.parse_args()
     if args.api_url and check_if_only_version_file_is_modified(args.api_url):
         ## should be on PR branch
-        version = release_info.get_version()
-        version_info = release_info.get_info()
+        version = release_info.get_version("./")
+        version_info = release_info.get_info("./")
         print(f'[INFO] Release found in PR files : {version}.')
         print(f'::set-output name=PR_version::{version}')
         print(f'::set-output name=PR_release_info::{version_info}')
         print(f'::set-output name=PR_includes_release::true')
         make_release_body(version,version_info)
     else:
-        version = release_info.get_version()
-        version_info = release_info.get_info()
+        version = release_info.get_version("./")
+        version_info = release_info.get_info("./")
         if args.version:
             # should be on main branch
             if semver.compare(args.version,version) > 0 :
