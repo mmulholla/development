@@ -1,4 +1,4 @@
-name: Worklow-Release
+name: Release-Workflow
 
 on:
   pull_request_target:
