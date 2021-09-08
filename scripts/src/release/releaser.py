@@ -7,7 +7,7 @@ schedule:
 import yaml
 import os
 import argparse
-import release_info
+from release import release_info
 from git import Repo
 
 sys.path.append('../')

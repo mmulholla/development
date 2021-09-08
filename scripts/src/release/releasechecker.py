@@ -27,7 +27,7 @@ import argparse
 import json
 import requests
 import semver
-import release_info
+from release import release_info
 
 VERSION_FILE = "release/release_info.json"
 
