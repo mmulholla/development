@@ -1,4 +1,4 @@
-name: CI
+name: Worklow-Release
 
 on:
   pull_request_target:
@@ -20,7 +20,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           path: "pr-branch"
-
 
       - name: Checkout charts repo
         uses: actions/checkout@v2
