@@ -58,8 +58,8 @@ def check_if_only_version_file_is_modified(api_url):
 
     return version_file_found
 
-def make_release_body(version, image_name, release_info):
-    body = f"Chart verifier version {version} <br>- {image_name}:{version}<br><br>"
+def make_release_body(version, release_info):
+    body = f"Chart verifier version {version} <br><br>"
     body += "This version includes:<br>"
     for info in release_info:
         body += f"- {info}<br>"
