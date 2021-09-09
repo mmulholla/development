@@ -68,7 +68,7 @@ def create_charts_pr(version):
     git = repo.git
 
     repo.config_writer().set_value("user", "name", "mmulholla").release()
-    repo.config_writer().set_value("user", "email", mmulholl@redhat.com).release()
+    repo.config_writer().set_value("user", "email", "mmulholl@redhat.com").release()
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
