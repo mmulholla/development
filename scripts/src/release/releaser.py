@@ -7,6 +7,7 @@ schedule:
 import yaml
 import os
 import argparse
+import sys
 from release import release_info
 from git import Repo
 

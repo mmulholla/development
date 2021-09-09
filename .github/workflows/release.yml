@@ -32,14 +32,6 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Set up Python scripts on moan branch
-        run: |
-          # set up python scripts
-          echo "set up python script in $PWD"
-          python3 -m venv ve1
-          cd scripts && ../ve1/bin/pip3 install -r requirements.txt && cd ..
-          cd scripts && ../ve1/bin/python3 setup.py install && cd ..
-
       - name: Set up Python scripts in pr-branch
         working-directory: ./pr-branch
         run: |
@@ -56,6 +48,15 @@ jobs:
         run: |
           # check if release file only is included in PR
           ve1/bin/release-checker --api-url=${{ github.event.pull_request._links.self.href }}
+
+      - name: Set up Python scripts on ma1n branch
+        if: ${{ steps.check_version_in_PR.outputs.PR_includes_release == 'true' }}
+        run: |
+          # set up python scripts
+          echo "set up python script in $PWD"
+          python3 -m venv ve1
+          cd scripts && ../ve1/bin/pip3 install -r requirements.txt && cd ..
+          cd scripts && ../ve1/bin/python3 setup.py install && cd ..
 
       - name: Check for restricted files and user permissiom
         id: check_authorization
