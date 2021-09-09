@@ -1,5 +1,4 @@
 import os
-import print
 import json
 import requests
 from git import Repo
