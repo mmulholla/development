@@ -7,7 +7,8 @@ from git.exc import GitCommandError
 GITHUB_BASE_URL = 'https://api.github.com'
 #CHARTS_REPO = 'openshift-helm-charts/charts'
 CHARTS_REPO =  'mmulholla/charts'
-DEVELOPMENT_REPO = 'openshift-helm-charts/development'
+#DEVELOPMENT_REPO = 'openshift-helm-charts/development'
+DEVELOPMENT_REPO = 'mmulholla/development'
 
 def github_api_get(endpoint, bot_token, headers={}):
     if not headers:
@@ -68,12 +69,10 @@ def create_charts_pr(version):
 
     git = repo.git
 
-    #repo.config_writer().set_value("user", "name", "mmulholla").release()
-    #repo.config_writer().set_value("user", "email", "mmulholl@redhat.com").release()
+    os.environ.set("GIT_PYTHON_TRACE","full")
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
-
     print(f"checkout branch {branch_name}")
     git.checkout(branch_name)
 
@@ -86,17 +85,14 @@ def create_charts_pr(version):
     repo.index.commit(branch_name)
 
     print(f"push the branch to {CHARTS_REPO}")
-    #bot_name, bot_token = get_bot_name_and_token()
+    bot_name, bot_token = get_bot_name_and_token()
 
-    bot_token = os.environ.get("GITHUB_TOKEN")
     repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
                f'HEAD:refs/heads/{branch_name}', '-f')
-
 
     print("make the pull request")
     data = {'head': branch_name, 'base': 'main',
             'title': branch_name, 'body': branch_name}
-
 
     r = github_api(
         'post', f'repos/{CHARTS_REPO}/pulls', bot_token, json=data)
@@ -104,4 +100,24 @@ def create_charts_pr(version):
     print(f"pull request number: {j['number']} ")
 
 
+def commit_development_updates(version):
 
+    repo = Repo(os.getcwd())
+    git = repo.git
+
+    print("checkout main")
+    git.checkout("main")
+
+    changed = [ item.a_path for item in repo.index.diff(None) ]
+    for change in changed:
+        print(f"Add file: {change}")
+        git.add(change)
+
+    print(f"commit changes with message: Version-{version}")
+    repo.index.commit(f"Version-{version}")
+
+    print(f"push the branch to {DEVELOPMENT_REPO}")
+    bot_name, bot_token = get_bot_name_and_token()
+
+    repo.git.push(f'https://x-access-token:{bot_token}@github.com/{DEVELOPMENT_REPO}',
+                  f'HEAD:refs/heads/main', '-f')

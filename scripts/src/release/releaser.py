@@ -139,23 +139,27 @@ def main():
     args = parser.parse_args()
 
     start_directory = os.getcwd()
-    print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to charts from development")
     make_required_changes("./",CHARTS_DIR)
-    print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to development from charts")
     make_required_changes(CHARTS_DIR,"./")
-    print(f"Now in directory : {os.getcwd()}")
     print(f"edit files in charts")
     os.chdir(CHARTS_DIR)
-    print(f"Now in directory : {os.getcwd()}")
     update_workflow()
     print(f"create charts pull request")
-    gitutils.create_charts_pr(args.version)
+    try:
+        gitutils.create_charts_pr(args.version)
+    except:
+        e = sys.exc_info()[0]
+        print(f"Error : {e}")
+
     os.chdir(start_directory)
-    print(f"Now in directory : {os.getcwd()}")
-
-
+    print(f"commit development changes")
+    try:
+       gitutils.commit_development_updates(args.version)
+    except:
+       e = sys.exc_info()[0]
+       print(f"Error : {e}")
 
 
 if __name__ == "__main__":

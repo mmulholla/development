@@ -82,8 +82,6 @@ jobs:
           PR_BODY: ${{ steps.check_version_in_PR.outputs.PR_release_body }}
         run: |
           # sync the repositories
-          echo "current directory: $(pwd)"
-          echo "directory content: $(ls)"
           ve1/bin/releaser --version=${{ steps.check_version_in_PR.outputs.PR_version }}
 
       - name: Approve PR
