@@ -136,12 +136,13 @@ def main():
                         help="Version to compare")
     args = parser.parse_args()
 
+    print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to charts from development")
     make_required_changes("./","./charts-repo/")
-
+    print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to development from charts")
     make_required_changes("./charts-repo/","./")
-
+    print(f"Now in directory : {os.getcwd()}")
     print(f"edit files in charts")
     os.chdir("./charts-repo")
     print(f"Now in directory : {os.getcwd()}")
