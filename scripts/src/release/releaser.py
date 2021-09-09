@@ -12,7 +12,7 @@ from release import release_info
 from git import Repo
 
 sys.path.append('../')
-from githib import gitutils
+from github import gitutils
 
 CHARTS_REPO = "openshift-helm-charts/charts"
 DEVELOPMENT_REPO = "openshift-helm-charts/development"
