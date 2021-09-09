@@ -144,7 +144,7 @@ def main():
     make_required_changes("./charts-repo/","./")
     print(f"Now in directory : {os.getcwd()}")
     print(f"edit files in charts")
-    os.chdir("./charts-repo")
+    os.chdir("charts-repo")
     print(f"Now in directory : {os.getcwd()}")
     update_workflow()
     print(f"create charts pull request")
