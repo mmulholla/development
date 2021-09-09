@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from git import Repo
+from git.exc import GitCommandError
 
 GITHUB_BASE_URL = 'https://api.github.com'
 #CHARTS_REPO = 'openshift-helm-charts/charts'
@@ -67,8 +68,8 @@ def create_charts_pr(version):
 
     git = repo.git
 
-    repo.config_writer().set_value("user", "name", "mmulholla").release()
-    repo.config_writer().set_value("user", "email", "mmulholl@redhat.com").release()
+    #repo.config_writer().set_value("user", "name", "mmulholla").release()
+    #repo.config_writer().set_value("user", "email", "mmulholl@redhat.com").release()
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
