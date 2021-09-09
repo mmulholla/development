@@ -22,6 +22,8 @@ BUILD_YAML_FILE=".github/workflows/build.yml"
 
 RELEASE_INFO_FILE="release/release_info.json"
 
+CHARTS_DIR = "charts_repo"
+
 def create_charts_pr(version):
   repo = Repo(os.getcwd())
 
@@ -136,20 +138,21 @@ def main():
                         help="Version to compare")
     args = parser.parse_args()
 
+    start_directory = os.getcwd()
     print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to charts from development")
-    make_required_changes("./","./charts-repo/")
+    make_required_changes("./",CHARTS_DIR)
     print(f"Now in directory : {os.getcwd()}")
     print(f"make changes to development from charts")
-    make_required_changes("./charts-repo/","./")
+    make_required_changes(CHARTS_DIR,"./")
     print(f"Now in directory : {os.getcwd()}")
     print(f"edit files in charts")
-    os.chdir("charts-repo")
+    os.chdir(CHARTS_DIR)
     print(f"Now in directory : {os.getcwd()}")
     update_workflow()
     print(f"create charts pull request")
     gitutils.create_charts_pr(args.version)
-    os.chdir("../")
+    os.chdir(start_directory)
     print(f"Now in directory : {os.getcwd()}")
 
 
