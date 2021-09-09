@@ -68,6 +68,7 @@ def create_charts_pr(version):
     git = repo.git
 
     repo.config_writer().set_value("user", "name", "mmulholla").release()
+    repo.config_writer().set_value("user", "email", mmulholl@redhat.com).release()
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
@@ -84,9 +85,9 @@ def create_charts_pr(version):
     repo.index.commit(branch_name)
 
     print(f"push the branch to {CHARTS_REPO}")
-    bot_name, bot_token = get_bot_name_and_token()
+    #bot_name, bot_token = get_bot_name_and_token()
 
-
+    bot_token = os.environ.get("GITHUB_TOKEN")
     repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
                f'HEAD:refs/heads/{branch_name}', '-f')
 
