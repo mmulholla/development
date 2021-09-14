@@ -74,8 +74,8 @@ def create_charts_pr(version):
 
     repo = Repo(os.getcwd())
 
-    #bot_name, bot_token = get_bot_name_and_token()
-    #set_git_username_email(repo,bot_name,GITHUB_ACTIONS_BOT_EMAIL)
+    bot_name, bot_token = get_bot_name_and_token()
+    set_git_username_email(repo,bot_name,GITHUB_ACTIONS_BOT_EMAIL)
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
