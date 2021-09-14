@@ -115,15 +115,17 @@ def main():
                        help="Directory of development code with latest release info.")
     parser.add_argument("-c", "--charts_dir", dest="charts_dir", type=str, required=True,
                         help="Directory of charts code.")
+    parser.add_argument("-p", "--pr_dir", dest="pr_dir", type=str, required=True,
+                        help="Directory of pull request code.")
     args = parser.parse_args()
 
     start_directory = os.getcwd()
     print(f"working directory: {start_directory}")
 
     print(f"make changes to charts from development")
-    make_required_changes(args.dev_dir,args.dev_dir,args.charts_dir)
+    make_required_changes(args.pr_dir,args.dev_dir,args.charts_dir)
     print(f"make changes to development from charts")
-    make_required_changes(args.dev_dir,args.charts_dir,args.dev_dir)
+    make_required_changes(args.pr_dir,args.charts_dir,args.dev_dir)
     print(f"edit files in charts")
 
     os.chdir(args.charts_dir)

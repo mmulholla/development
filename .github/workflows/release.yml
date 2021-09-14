@@ -29,6 +29,13 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           path: "charts-repo"
 
+      - name: Checkout charts repo
+        uses: actions/checkout@v2
+        with:
+          repository: openshift-helm-charts/devlopment
+          token: ${{ secrets.BOT_TOKEN }}
+          path: "dev-repo"
+
       - name: Set up Python 3.x Part 1
         uses: actions/setup-python@v2
         with:
@@ -83,7 +90,7 @@ jobs:
           PR_BODY: ${{ steps.check_version_in_PR.outputs.PR_release_body }}
         run: |
           # sync the repositories
-          ve1/bin/releaser --version=${{ steps.check_version_in_PR.outputs.PR_version }} --development_dir="./" --charts_dir="./charts-repo"
+          ve1/bin/releaser --version=${{ steps.check_version_in_PR.outputs.PR_version }} --pr_dir="./pr-branch" --development_dir="./dev-repo" --charts_dir="./charts-repo"
 
       - name: Approve PR
         id: approve_pr

@@ -87,19 +87,19 @@ def create_charts_pr(version):
         print(f"commit changes with message: {branch_name}")
         repo.index.commit(branch_name)
 
-    #print(f"push the branch to {CHARTS_REPO}")
-    #repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
-    #           f'HEAD:refs/heads/{branch_name}','-f')
+        print(f"push the branch to {CHARTS_REPO}")
+        repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
+                   f'HEAD:refs/heads/{branch_name}','-f')
 
-    #print("make the pull request")
-    #data = {'head': branch_name, 'base': 'main',
-    #        'title': branch_name, 'body': f'Workflow and script updates from development repository {branch_name}'}
+        print("make the pull request")
+        data = {'head': branch_name, 'base': 'main',
+                'title': branch_name, 'body': f'Workflow and script updates from development repository {branch_name}'}
 
-    #r = github_api(
-    #    'post', f'repos/{CHARTS_REPO}/pulls', bot_token, json=data)
+        r = github_api(
+            'post', f'repos/{CHARTS_REPO}/pulls', bot_token, json=data)
 
-    #j = json.loads(r.text)
-    #print(f"pull request info: {j}")
+        j = json.loads(r.text)
+        print(f"pull request info: {j}")
     else:
         print(f"no changes required for {CHARTS_REPO}")
 
@@ -117,11 +117,11 @@ def commit_development_updates(version,skip_files):
         print(f"commit changes with message: Version-{version} Update charts from chart repository")
         repo.index.commit(f"Version-{version} Update charts from chart repository")
 
-        #print(f"push the branch to {DEVELOPMENT_REPO}")
-        #ot_name, bot_token = get_bot_name_and_token()
+        print(f"push the branch to {DEVELOPMENT_REPO}")
+        bot_name, bot_token = get_bot_name_and_token()
 
-        #repo.git.push(f'https://x-access-token:{bot_token}@github.com/{DEVELOPMENT_REPO}',
-        #          f'HEAD:refs/heads/main', '-f')
+        repo.git.push(f'https://x-access-token:{bot_token}@github.com/{DEVELOPMENT_REPO}',
+                  f'HEAD:refs/heads/main', '-f')
     else:
         print(f"no changes required for {DEVELOPMENT_REPO}")
 
