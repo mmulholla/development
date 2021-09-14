@@ -16,8 +16,11 @@ from github import gitutils
 SCHEDULE_YAML_FILE=".github/workflows/schedule.yml"
 BUILD_YAML_FILE=".github/workflows/build.yml"
 
-RELEASE_INFO_FILE="release/release_info.json"
-
+SCHEDULE_INSERT = [
+    '  # Daily trigger to check updates',
+    '  schedule:',
+    '    - cron: "0 0 * * *"'
+]
 
 def update_workflow():
 
@@ -27,13 +30,14 @@ def update_workflow():
         lines = schedule_file.readlines()
 
         for line in lines:
-            insert_location = lines.index(line)+1
-            if lines[insert_location].rstrip() != '  # Daily trigger to check updates':
-                print("[INFO] add cron job to schedule.yaml")
-                lines.insert(insert_location,'  # Daily trigger to check updates\n')
-                lines.insert(insert_location,'  schedule:\n')
-                lines.insert(insert_location+2,'    - cron: "0 0 * * *"\n')
-                break
+            if line.strip() == "on:":
+                insert_location = lines.index(line)+1
+                if SCHEDULE_INSERT[0] not in lines[insert_location].rstrip():
+                    print("[INFO] add cron job to schedule.yaml")
+                    lines.insert(insert_location,f"{SCHEDULE_INSERT[0]}\n")
+                    lines.insert(insert_location+1,f"{SCHEDULE_INSERT[1]}\n")
+                    lines.insert(insert_location+2,f"{SCHEDULE_INSERT[2]}\n")
+                    break
 
     with open(SCHEDULE_YAML_FILE,'w') as schedule_file:
         schedule_file.write("".join(lines))
@@ -53,14 +57,6 @@ def update_workflow():
 
     with open(BUILD_YAML_FILE,'w') as build_file:
         build_file.write("".join(lines))
-
-def get_release_info(directory):
-
-    data = {}
-    print(f"read file: {directory}{RELEASE_INFO_FILE}")
-    with open(f"{directory}{RELEASE_INFO_FILE}",'r') as json_file:
-        data = json.load(json_file)
-    return data
 
 
 def make_required_changes(release_info_dir,origin,destination):
@@ -100,7 +96,7 @@ def make_required_changes(release_info_dir,origin,destination):
 
     ignores = release_info.get_ignores(repository,release_info_dir)
     for ignore in ignores:
-        ignore_this = f"{destination}{ignore}"
+        ignore_this = f"{destination}/{ignore}"
         if os.path.isdir(ignore_this):
             print(f"Ignore/delete directory {ignore_this}")
             os.system(f"rm -rf {ignore_this}")
@@ -129,15 +125,18 @@ def main():
     print(f"make changes to development from charts")
     make_required_changes(args.dev_dir,args.charts_dir,args.dev_dir)
     print(f"edit files in charts")
+
     os.chdir(args.charts_dir)
     update_workflow()
     print(f"create charts pull request")
-
     gitutils.create_charts_pr(args.version)
 
     os.chdir(start_directory)
+    os.chdir(args.dev_dir)
     print(f"commit development changes")
-    gitutils.commit_development_updates(args.version)
+    gitutils.commit_development_updates(args.version,release_info.RELEASE_INFO_FILE)
+
+    os.chdir(start_directory)
 
 if __name__ == "__main__":
     main()

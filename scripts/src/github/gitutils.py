@@ -74,59 +74,77 @@ def create_charts_pr(version):
 
     repo = Repo(os.getcwd())
 
-    bot_name, bot_token = get_bot_name_and_token()
-    set_git_username_email(repo,bot_name,GITHUB_ACTIONS_BOT_EMAIL)
+    #bot_name, bot_token = get_bot_name_and_token()
+    #set_git_username_email(repo,bot_name,GITHUB_ACTIONS_BOT_EMAIL)
 
     branch_name = f"Release-{version}"
     repo.create_head(branch_name)
     print(f"checkout branch {branch_name}")
     repo.git.checkout(branch_name)
 
-    changed = [ item.a_path for item in repo.index.diff(None) ]
-    for change in changed:
-        print(f"Add file: {change}")
-        repo.git.add(change)
+    if add_changes(repo,[]):
 
-    print(f"commit changes with message: {branch_name}")
-    repo.index.commit(branch_name)
+        print(f"commit changes with message: {branch_name}")
+        repo.index.commit(branch_name)
 
-    print(f"push the branch to {CHARTS_REPO}")
-    repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
-               f'HEAD:refs/heads/{branch_name}','-f')
+    #print(f"push the branch to {CHARTS_REPO}")
+    #repo.git.push(f'https://x-access-token:{bot_token}@github.com/{CHARTS_REPO}',
+    #           f'HEAD:refs/heads/{branch_name}','-f')
 
-    print("make the pull request")
-    data = {'head': branch_name, 'base': 'main',
-            'title': branch_name, 'body': f'Workflow and script updates from development repository {branch_name}'}
+    #print("make the pull request")
+    #data = {'head': branch_name, 'base': 'main',
+    #        'title': branch_name, 'body': f'Workflow and script updates from development repository {branch_name}'}
 
-    r = github_api(
-        'post', f'repos/{CHARTS_REPO}/pulls', bot_token, json=data)
+    #r = github_api(
+    #    'post', f'repos/{CHARTS_REPO}/pulls', bot_token, json=data)
 
-    j = json.loads(r.text)
-    print(f"pull request info: {j}")
+    #j = json.loads(r.text)
+    #print(f"pull request info: {j}")
+    else:
+        print(f"no changes required for {CHARTS_REPO}")
 
 
-def commit_development_updates(version):
+
+def commit_development_updates(version,skip_files):
 
     repo = Repo(os.getcwd())
 
     print("checkout main")
     repo.git.checkout("main")
 
-    file_addded = False
-    changed = [ item.a_path for item in repo.index.diff(None) ]
+    if add_changes(repo,skip_files):
 
-    if changed:
-        for change in changed:
-            print(f"Add file: {change}")
-            git.add(change)
-
-        print(f"commit changes with message: Version-{version}")
+        print(f"commit changes with message: Version-{version} Update charts from chart repository")
         repo.index.commit(f"Version-{version} Update charts from chart repository")
 
-        print(f"push the branch to {DEVELOPMENT_REPO}")
-        bot_name, bot_token = get_bot_name_and_token()
+        #print(f"push the branch to {DEVELOPMENT_REPO}")
+        #ot_name, bot_token = get_bot_name_and_token()
 
-        repo.git.push(f'https://x-access-token:{bot_token}@github.com/{DEVELOPMENT_REPO}',
-                  f'HEAD:refs/heads/main', '-f')
+        #repo.git.push(f'https://x-access-token:{bot_token}@github.com/{DEVELOPMENT_REPO}',
+        #          f'HEAD:refs/heads/main', '-f')
     else:
         print(f"no changes required for {DEVELOPMENT_REPO}")
+
+
+def add_changes(repo,skip_files):
+
+    if len(skip_files) == 0:
+        print(f"Add all changes")
+        repo.git.add(all=True)
+    else:
+        changed = [ item.a_path for item in repo.index.diff(None) ]
+        for change in changed:
+            if change in skip_files:
+                print(f"Skip changed file: {change}")
+            else:
+                print(f"Add changed file: {change}")
+                repo.git.add(change)
+
+        for add in repo.untracked_files:
+            if add in skip_files:
+                print(f"Skip added file: {add}")
+            else:
+                print(f"Add added file: {add}")
+                repo.git.add(add)
+
+    return len(repo.index.diff("HEAD")) > 0
