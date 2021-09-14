@@ -25,14 +25,14 @@ jobs:
       - name: Checkout charts repo
         uses: actions/checkout@v2
         with:
-          repository: openshift-helm-charts/charts
+          repository: mmulholla/charts
           token: ${{ secrets.BOT_TOKEN }}
           path: "charts-repo"
 
       - name: Checkout charts repo
         uses: actions/checkout@v2
         with:
-          repository: openshift-helm-charts/devlopment
+          repository: mmulholla/development
           token: ${{ secrets.BOT_TOKEN }}
           path: "dev-repo"
 
