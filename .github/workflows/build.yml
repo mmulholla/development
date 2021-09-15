@@ -72,7 +72,7 @@ jobs:
 
       - name: Sanity Check PR Content
         id: sanity_check_pr_content
-        if: ${{ steps.check_ci_changes.outputs.run-tests != 'true' }}
+        if: ${{ steps.check_ci_changes.outputs.run-tests != 'true' && steps.check_ci_changes.outputs.do-not-build != 'true'}}
         continue-on-error: true
         env:
           GITHUB_REF: ${{ github.ref }}
