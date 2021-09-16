@@ -1,7 +1,7 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "info" : [
-      "Test release of development repository"
+      "Test release 0.1.0 of development repository"
   ],
   "charts" : {
     "merge": [
@@ -16,10 +16,6 @@
       "docs",
       "tests"
     ],
-    "ignore" : [".github/workflows/release.yml",
-      "scripts/src/owners",
-      "scripts/src/release",
-      "scripts/src/github"
-    ]
+    "ignore" : [".github/workflows/release.yml"]
   }
 }
