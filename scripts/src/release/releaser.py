@@ -104,7 +104,7 @@ def make_required_changes(release_info_dir,origin,destination):
 
         if os.path.isdir(merge_this) or os.path.isdir(into_this):
             print(f"Merge directory {merge_this} with {into_this}")
-            shutil.move(merge_this,into_this/)
+            shutil.move(merge_this,into_this)
         else:
             print(f"Merge file {merge_this} with {into_this}")
             shutil.copy2(merge_this,into_this)
