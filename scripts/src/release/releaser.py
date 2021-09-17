@@ -147,7 +147,7 @@ def main():
     update_workflow()
 
     print(f"create charts pull request")
-    #gitutils.create_charts_pr(args.version)
+    gitutils.create_charts_pr(args.version)
 
     os.chdir(start_directory)
 
@@ -156,7 +156,7 @@ def main():
 
     os.chdir(args.dev_dir)
     print(f"commit development changes")
-    #gitutils.commit_development_updates(args.version,release_info.RELEASE_INFO_FILE)
+    gitutils.commit_development_updates(args.version,release_info.RELEASE_INFO_FILE)
 
     os.chdir(start_directory)
 
