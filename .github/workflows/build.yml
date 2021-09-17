@@ -52,6 +52,7 @@ jobs:
              exit 0
           else
             echo "::set-output name=run-build::true"
+          fi
 
       - name: Add 'test' label to PR
         id: set_test_label
