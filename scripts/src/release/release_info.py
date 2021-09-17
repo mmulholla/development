@@ -21,7 +21,7 @@ def _get_release_info(directory):
 
     root_dir = os.path.dirname(f"{os.getcwd()}/{directory}")
 
-    if not RELEASE_INFOS[root_dir]:
+    if not root_dir in RELEASE_INFOS:
 
         print(f"Open release_info file: {root_dir}/{RELEASE_INFO_FILE}")
 
