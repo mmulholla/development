@@ -23,6 +23,7 @@ import yaml
 import os
 import argparse
 import sys
+import shutil
 from release import release_info
 
 sys.path.append('../')
