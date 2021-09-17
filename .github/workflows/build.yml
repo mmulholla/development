@@ -278,7 +278,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Release Charts
-        if: ${{ steps.check_build_required.outputs.run-build == 'true'' }}
+        if: ${{ steps.check_build_required.outputs.run-build == 'true' }}
         env:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
