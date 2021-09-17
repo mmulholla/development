@@ -105,7 +105,7 @@ def make_required_changes(release_info_dir,origin,destination):
 
         if os.path.isdir(merge_this) or os.path.isdir(into_this):
             print(f"Merge directory {merge_this} with {into_this}")
-            shutil.move(merge_this,into_this)
+            shutil.copytree(merge_this,into_this,dirs_exist_ok=True)
         else:
             print(f"Merge file {merge_this} with {into_this}")
             shutil.copy2(merge_this,into_this)
@@ -141,19 +141,22 @@ def main():
 
     print(f"make changes to charts from development")
     make_required_changes(args.pr_dir,args.dev_dir,args.charts_dir)
-    print(f"make changes to development from charts")
-    make_required_changes(args.pr_dir,args.charts_dir,args.dev_dir)
-    print(f"edit files in charts")
 
+    print(f"edit files in charts")
     os.chdir(args.charts_dir)
     update_workflow()
+
     print(f"create charts pull request")
-    gitutils.create_charts_pr(args.version)
+    #gitutils.create_charts_pr(args.version)
 
     os.chdir(start_directory)
+
+    print(f"make changes to development from charts")
+    make_required_changes(args.pr_dir,args.charts_dir,args.dev_dir)
+
     os.chdir(args.dev_dir)
     print(f"commit development changes")
-    gitutils.commit_development_updates(args.version,release_info.RELEASE_INFO_FILE)
+    #gitutils.commit_development_updates(args.version,release_info.RELEASE_INFO_FILE)
 
     os.chdir(start_directory)
 
