@@ -30,7 +30,6 @@ import json
 import requests
 import semver
 import sys
-from semver.version import Version
 from release import release_info
 from release import releaser
 
@@ -106,7 +105,7 @@ def check_if_release_branch(sender,pr_branch,pr_body,api_url):
         return False
 
     version = pr_branch.removeprefix(releaser.DEV_PR_BRANCH_NAME_PREFIX)
-    if not Version.isValid(version):
+    if not semver.Version.isValid(version):
         print(f"Release part ({version}) of branch name {pr_branch} is not a valid semantic version.")
         return False
     
