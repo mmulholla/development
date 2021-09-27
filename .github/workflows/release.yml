@@ -73,7 +73,7 @@ jobs:
           elif [ ${RELEASE_INFO_ONLY}" == 'true' ]; then
              echo "PR contains only release_info file"
              echo '::set-output name=create_pull_requests::true'
-          elif [ ${DEV_PR_FOR_RELEASE} != 'true' ]
+          elif [ ${DEV_PR_FOR_RELEASE} != 'true' ]; then
              echo "No release work to do"
              exit
           fi
