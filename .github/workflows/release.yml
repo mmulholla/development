@@ -61,7 +61,7 @@ jobs:
 
       - name: Reflect on PR Content
         id: reflect_on_pr_content
-        ENV:
+        env:
           RELEASE_INFO_ONLY: ${{ steps.check_only_version_in_PR_and_authorized.outputs.PR_includes_release_only }}
           NOT_AUTHORIZED: ${{ steps.check_only_version_in_PR_and_authorized.outputs.sender_not_authorized }}
           DEV_PR_FOR_RELEASE: ${{ steps.check_created_release_pr.outputs.dev_release_branch }}
@@ -129,7 +129,7 @@ jobs:
                              --charts_dir="./charts-repo" \
                              --dev_pr_body="${{ steps.check_only_version_in_PR_and_authorized.outputs.PR_release_body }}"
 
-      - name: Determine if merge and rerlrase are needed
+      - name: Determine if merge and release are needed
         id: check_merge_and_release
         env:
           REPOSITORIES_SYNCED: ${{ steps.check_version_updated.outputs.release_updated }}
