@@ -105,7 +105,7 @@ def check_if_release_branch(sender,pr_branch,pr_body,api_url):
         return False
 
     version = pr_branch.removeprefix(releaser.DEV_PR_BRANCH_NAME_PREFIX)
-    if not semver.Version.isValid(version):
+    if not semver.VersionInfo.isvalid(version):
         print(f"Release part ({version}) of branch name {pr_branch} is not a valid semantic version.")
         return False
     
