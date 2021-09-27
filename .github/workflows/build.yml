@@ -63,7 +63,7 @@ jobs:
           elif [ ${NO_CODE_TO_BUILD} == "true" ]; then
              echo "The PR does not contain changes which need build or test."
              exit 0
-          elif [ ${DEV_PR_FOR_RELEASE} == "true ]; then
+          elif [ ${DEV_PR_FOR_RELEASE} == "true" ]; then
               echo "The PR is part of release processing for the devleopmnet branch - do not continue."
           else
             echo "::set-output name=run-build::true"

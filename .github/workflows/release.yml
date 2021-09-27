@@ -70,7 +70,7 @@ jobs:
           if [ ${NOT_AUTHORIZED} = 'true' ]; then
               echo "Unauthorized Request"
               exit 1
-          elif [ ${RELEASE_INFO_ONLY}" == 'true' ]; then
+          elif [ ${RELEASE_INFO_ONLY} == 'true' ]; then
              echo "PR contains only release_info file"
              echo '::set-output name=create_pull_requests::true'
           elif [ ${DEV_PR_FOR_RELEASE} != 'true' ]; then
