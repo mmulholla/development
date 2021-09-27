@@ -1,8 +1,8 @@
 {
-  "version": "1.0.3",
+  "version": "1.0.4",
   "info" : [
-      "Test release 1.0.3 of development repository",
-      "Various workflow updates"
+      "Test release 1.0.4 of development repository.",
+      "Various workflow updates."
   ],
   "charts" : {
     "merge": ["charts"]
