@@ -171,7 +171,7 @@ def main():
             print(f'::set-output name=PR_release_info::{version_info}')
             print(f'::set-output name=PR_includes_release_only::true')
             make_release_body(version,version_info)
-        else:
+        elif not user_authorized:
             print(f'[ERROR] sender not authorized : {args.sender}.')
             print(f'::set-output name=sender_not_authorized::true')
     else:
