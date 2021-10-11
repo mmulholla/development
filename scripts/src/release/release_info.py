@@ -1,6 +1,6 @@
 """
 Used by github actions,specifically as part of the charts auto release process defined in
-.github/workflow/release.yml. Encapsulates the release_info.json file.
+.github/workflow/release.yml. Encapsulates the release_info.json file contents.
 
 Provides get functions for all data in the release_info.json file.
 """
