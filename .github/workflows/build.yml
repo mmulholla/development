@@ -17,6 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: get some info
+        run: |
+          echo "Github repository: $GITHUB_REPOSITORY"
+          echo "Github event: $GITHUB_EVENT_NAME"
+          echo "Githiub actor: $GITHUB_ACTOR"
+          echo "Githiub workspace: $GITHUB_WORKSPACE"
+          env
+
       - name: Set up Python 3.x Part 1
         uses: actions/setup-python@v2
         with:
