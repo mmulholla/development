@@ -31,8 +31,8 @@ def getOCPVersions(kubeVersion):
             # Kubversion is bad, see if we can fix it
             separator = checkKubeVersion.find(" - ")
             if separator != -1:
-                lowVersion = test[:separator].strip()
-                highVersion = test[separator+3:].strip()
+                lowVersion = checkKubeVersion[:separator].strip()
+                highVersion = checkKubeVersion[separator+3:].strip()
                 #print(f"Low Version in range: {lowVersion}, high Version in range : {highVersion}")
                 #print(f"New Low Version in range: {semantic_version.Version.coerce(lowVersion)}, new high Version in range : {semantic_version.Version.coerce(highVersion)}")
                 checkKubeVersion = f"{semantic_version.Version.coerce(lowVersion)} - {semantic_version.Version.coerce(highVersion)}"
@@ -43,8 +43,8 @@ def getOCPVersions(kubeVersion):
                         firstDigit = i
                         break
                 if firstDigit != -1:
-                    versionInRange = test[firstDigit:].strip()
-                    preVersion = test[:firstDigit].strip()
+                    versionInRange = checkKubeVersion[firstDigit:].strip()
+                    preVersion = checkKubeVersion[:firstDigit].strip()
                     #print(f"Version in range: {versionInRange}, pre Version : {preVersion}")
                     checkKubeVersion = f"{preVersion}{semantic_version.Version.coerce(versionInRange)}"
 
