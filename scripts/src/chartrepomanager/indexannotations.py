@@ -1,8 +1,5 @@
 import sys
-import os
-import semver
 import semantic_version
-import re
 
 sys.path.append('../')
 from report import report_info
