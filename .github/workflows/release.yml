@@ -163,8 +163,8 @@ jobs:
           elif [ ! -z "${DEV_PR_FOR_RELEASE}" ] && [ ${DEV_PR_FOR_RELEASE} == 'true' ]; then
               echo "Dev PR so create release"
               echo '::set-output name=merge::true'
-              echo "::set-output name=release_body::${pr_body}"
-              echo "::set-output name=release_tag::${{ github.event.pull_request.body }}"
+              echo "::set-output name=release_body::${{ github.event.pull_request.body }}"
+              echo "::set-output name=release_tag::${{ steps.check_created_release_pr.outputs.PR_version }}"
           fi
 
       - name: Approve PR
