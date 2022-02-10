@@ -19,7 +19,7 @@ TYPE_MATCH_EXPRESSION = "(partners|redhat|community)"
 
 def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
     
-    category, organization, chart, version, file = report_file_match.groups()
+    category, organization, chart, version = report_file_match.groups()
 
     print(f"read owners file : {category}/{organization}/{chart}" )
     found_owners,owner_data = owners_file.get_owner_data(category, organization, chart)
@@ -33,7 +33,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
         sys.exit(1)
 
     if report_in_pr:
-        report_file_path = os.path.join("charts", category, organization, chart, version, file)
+        report_file_path = os.path.join("charts", category, organization, chart, version, "report.yaml")
         print(f"read report file : {report_file_path}" )
         found_report,report_data = verifier_report.get_report_data(report_file_path)
 
