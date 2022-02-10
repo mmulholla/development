@@ -3,7 +3,7 @@ chart:
   name: psql-service
   shortDescription: Lorem ipsum
 publicPgpKey:
-providerDelivery: False
+providerDelivery: True
 users:
   - githubUsername: mmulholla
 vendor:
