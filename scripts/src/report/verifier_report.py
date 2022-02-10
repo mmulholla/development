@@ -79,7 +79,8 @@ def get_provider_delivery(report_data):
     provider_delivery = False
     try:
         provider_delivery = report_data["metadata"]["tool"]["providerControlledDelivery"]
-    except Exception:
+    except Exception as err:
+        print(f"Exception getting providerControlledDelivery {err=}, {type(err)=}")
         pass
     return provider_delivery
 
