@@ -17,10 +17,10 @@ from report import verifier_report
 ALLOW_CI_CHANGES = "allow/ci-changes"
 TYPE_MATCH_EXPRESSION = "(partners|redhat|community)"
 
-def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
+def check_provider_delivery(report_in_pr,num_files_in_pr,report_file_match):
 
     print(f"[INFO] report in PR {report_in_pr}")
-    print(f"[INFO] chart files in PR {chart_file_in_pr}")
+    print(f"[INFO] num files in PR {num_files_in_pr}")
     
     category, organization, chart, version = report_file_match.groups()
 
@@ -50,7 +50,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
             print(f"::set-output name=pr-content-error-message::{msg}")
             sys.exit(1)
 
-    if report_in_pr and chart_file_in_pr:
+    if report_in_pr and num_files_in_pr > 1:
         if report_provider_delivery or owner_provider_delivery:
             msg = f"[ERROR] OWNERS file and/or report indicate provider controlled delivery but pull request is not report only."
             print(msg)
@@ -91,7 +91,7 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
     reportpattern = re.compile(r"charts/"+TYPE_MATCH_EXPRESSION+"/([\w-]+)/([\w-]+)/([\w\.-]+)/report.yaml")
     page_number = 1
     max_page_size,page_size = 100,100
-    match_found = False
+    matches_found = 0
     report_found = False
     none_chart_files = {}
     file_count = 0
@@ -113,20 +113,17 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
                 file_name = os.path.basename(file_path)
                 none_chart_files[file_name] = file_path
             else:
+                matches_found += 1
                 if reportpattern.match(file_path):
                     print("[INFO] Report found")
                     print("::set-output name=report-exists::true")
-                    report_match = match
                     report_found = True
                 if not match_found:
-                    print(f"[INFO] Chart file found: {file_path}")
                     pattern_match = match
-                    match_found = True
                 elif pattern_match.groups() != match.groups():
                     msg = f"[ERROR] PR must only include one chart"
                     print(msg)
                     print(f"::set-output name=pr-content-error-message::{msg}")
-                    sys.exit(1)
     
     if none_chart_files:
         if file_count > 1 or "OWNERS" not in none_chart_files: #OWNERS not present or preset but not the only file
@@ -154,9 +151,9 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
                 
         sys.exit(1)
 
-    check_provider_delivery(report_found,match_found,report_match)
+    check_provider_delivery(report_found,matches_found,pattern_match)
 
-    if match_found:
+    if matches_found>0:
         category, organization, chart, version = pattern_match.groups()
         print(f"::set-output name=category::{'partner' if category == 'partners' else category}")
         print("Downloading index.yaml", category, organization, chart, version)
