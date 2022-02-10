@@ -40,7 +40,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
 
         if found_report:
             report_provider_delivery = verifier_report.get_provider_delivery(report_data)
-            print(f"[INFO] providerDelivery from report : {owner_provider_delivery}")
+            print(f"[INFO] providerDelivery from report : {report_provider_delivery}")
         else:
             msg = f"[ERROR] Failed tp open report: {report_file_path}."
             print(msg)
