@@ -18,7 +18,7 @@ entries:
     type: application
     urls:
     - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.11/test-org-psql-service-0.1.11.tgz
-    version: 0.1.11
+    version: 0.1.10
   - annotations:
       charts.openshift.io/digest: sha256:e276abc62f90411bd04dc42ad5728d7fa1c140eec5a8a5d39a0f922e5092b7b6
       charts.openshift.io/lastCertifiedTimestamp: '2021-12-08T22:41:33.496361+00:00'
@@ -36,7 +36,7 @@ entries:
     type: application
     urls:
     - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.12/test-org-psql-service-0.1.12.tgz
-    version: 0.1.12
+    version: 0.1.11
   - annotations:
       charts.openshift.io/digest: sha256:5b72aa6d1270c0ac1af9d3e9de9cb5083a2ea4ebd7aca1d616c6d011819a7a74
       charts.openshift.io/lastCertifiedTimestamp: '2021-12-09T10:25:24.669925-05:00'
@@ -54,5 +54,5 @@ entries:
     type: application
     urls:
     - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.14/test-org-psql-service-0.1.14.tgz
-    version: 0.1.14
+    version: 0.1.09
 generated: '2021-12-09T16:01:55.281078+00:00'
