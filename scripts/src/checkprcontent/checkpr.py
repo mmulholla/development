@@ -119,6 +119,7 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
                     report_match = match
                     report_found = True
                 if not match_found:
+                    print(f"[INFO] Chart file found: {file_path}")
                     pattern_match = match
                     match_found = True
                 elif pattern_match.groups() != match.groups():
