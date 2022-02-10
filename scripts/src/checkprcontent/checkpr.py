@@ -118,7 +118,7 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
                     print("[INFO] Report found")
                     print("::set-output name=report-exists::true")
                     report_found = True
-                if not match_found:
+                if matches_found == 1:
                     pattern_match = match
                 elif pattern_match.groups() != match.groups():
                     msg = f"[ERROR] PR must only include one chart"
@@ -140,7 +140,7 @@ def ensure_only_chart_is_modified(api_url, repository, branch):
                 msg = "[ERROR] OWNERS file should never be set directly by partners. See certification docs."
                 print(msg)
                 print(f"::set-output name=owners-error-message::{msg}")
-            elif match_found: # There is a mix of chart and non-chart files including OWNERS
+            elif matches_found>0: # There is a mix of chart and non-chart files including OWNERS
                 msg = "[ERROR] Send OWNERS file by itself in a separate PR."
                 print(msg)
                 print(f"::set-output name=owners-error-message::{msg}")
