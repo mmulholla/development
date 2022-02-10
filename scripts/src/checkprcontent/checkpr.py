@@ -18,6 +18,9 @@ ALLOW_CI_CHANGES = "allow/ci-changes"
 TYPE_MATCH_EXPRESSION = "(partners|redhat|community)"
 
 def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
+
+    print(f"[INFO] report in PR {report_in_pr}")
+    print(f"[INFO] chart files in PR {chart_file_in_pr}")
     
     category, organization, chart, version = report_file_match.groups()
 
