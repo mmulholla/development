@@ -26,6 +26,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
 
     if found_owners:
         owner_provider_delivery = owners_file.get_provider_delivery(owner_data)
+        print(f"[INFO] providerDelivery from OWNERS : {owner_provider_delivery}")
     else:
         msg = "[ERROR] OWNERS file was not found."
         print(msg)
@@ -39,6 +40,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
 
         if found_report:
             report_provider_delivery = verifier_report.get_provider_delivery(owner_data)
+            print(f"[INFO] providerDelivery from report : {owner_provider_delivery}")
         else:
             msg = f"[ERROR] Failed tp open report: {report_file_path}."
             print(msg)
@@ -53,6 +55,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
             sys.exit(1)
     elif report_in_pr:
         if report_provider_delivery and owner_provider_delivery:
+            print(f"[INFO] providerDelivery is a go")
             print(f"::set-output name=providerDelivery::True")
         elif report_provider_delivery:
             msg = f"[ERROR] Report indicates provider controlled delivery but OWNERS file does not."
@@ -66,6 +69,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
             sys.exit(1)
         else:
             print(f"::set-output name=providerDelivery::False")
+            print(f"[INFO] providerDelivery is a no-go")
 
 
 
