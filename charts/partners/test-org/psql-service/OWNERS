@@ -2,9 +2,10 @@
 chart:
   name: psql-service
   shortDescription: Lorem ipsum
-publicPgpKey: 
+publicPgpKey:
+providerDelivery: False
 users:
   - githubUsername: mmulholla
 vendor:
-  label: test-org1
+  label: test-org
   name: Balabit
