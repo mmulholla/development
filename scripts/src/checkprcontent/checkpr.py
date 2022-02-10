@@ -33,7 +33,7 @@ def check_provider_delivery(report_in_pr,chart_file_in_pr,report_file_match):
         sys.exit(1)
 
     if report_in_pr:
-        report_file_path = os.path.join("charts", category, organization, chart, version, "report.yaml")
+        report_file_path = os.path.join("pr-branch","charts", category, organization, chart, version, "report.yaml")
         print(f"read report file : {report_file_path}" )
         found_report,report_data = verifier_report.get_report_data(report_file_path)
 

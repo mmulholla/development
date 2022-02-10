@@ -74,6 +74,14 @@ jobs:
             echo "::set-output name=run-build::true"
           fi
 
+      - name: Checkout
+        if: ${{ steps.check_build_required.outputs.run-build == 'true' }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          path: "pr-branch"
+
       - name: Check PR Content
         id: check_pr_content
         if: ${{ steps.check_build_required.outputs.run-build == 'true' }}
@@ -132,14 +140,6 @@ jobs:
               issue_number: Number(issue_number),
               name: 'authorized-request'
             })
-
-      - name: Checkout
-        if: ${{ steps.check_build_required.outputs.run-build == 'true' }}
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          path: "pr-branch"
 
       - name: Get Date
         id: get-date
