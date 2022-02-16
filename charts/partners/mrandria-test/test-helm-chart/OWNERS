@@ -1,0 +1,9 @@
+chart:
+   name: test-helm-chart
+   shortDescription: Helm Chart certification Test
+   publicPgpKey: null
+users:
+   - githubUsername: mrandria@redhat.com
+vendor:
+   label: mrandria-test
+   name: Marco Randria test workflow
