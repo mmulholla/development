@@ -332,10 +332,13 @@ def main():
     indexdir = create_worktree_for_index(branch)
 
     print(f'[INFO] os.environ["PROVIDER_DELIVERY"] {os.environ["PROVIDER_DELIVERY"]}')
+    print(f'[INFO] os.environ["PROVIDER_DELIVERY"] == True : {os.environ["PROVIDER_DELIVERY"]==True}')
+    print(f'[INFO] os.environ["PROVIDER_DELIVERY"] == "True" : {os.environ["PROVIDER_DELIVERY"]=="True"}')
     if os.environ["PROVIDER_DELIVERY"] and os.environ["PROVIDER_DELIVERY"] == True:
         indexfile = "unpublished-certified-charts.yaml"
     else:
         indexfile = "index.yaml"
+    print(f'[INFO] updating index file {indexfile}')
 
     print("[INFO] Report Content : ", os.environ.get("REPORT_CONTENT"))
     if chart_source_exists or chart_tarball_exists:
