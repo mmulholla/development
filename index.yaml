@@ -39,5 +39,5 @@ entries:
     type: application
     urls:
     - https://github.com/redhat-certification/chart-verifier/blob/main/tests/charts/psql-service/0.1.9/psql-service-0.1.9.tgz?raw=true
-    version: 0.1.9
+    version: 0.1.7
 generated: '2022-02-22T22:08:41.489958+00:00'
