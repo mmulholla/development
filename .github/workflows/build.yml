@@ -319,6 +319,8 @@ jobs:
 
       - name: Add metrics
         if: always() && steps.check_build_required.outputs.run-build == 'true'
+        env:
+          SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY }}
         run: |
           if [ "${{job.status}}" == "success" ]; then
             ve1/bin/metrics --metric-type=pull_request \
