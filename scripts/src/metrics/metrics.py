@@ -7,17 +7,19 @@ import sys
 import analytics
 import os
 
+sys.path.append('../')
+from indexfile import index
+
 logging.basicConfig(level=logging.INFO)
 
 def parse_response(response):
     result = []
     for obj in response:
-        if 'name' in obj and len(obj.get('assets', [])) > 0:
-            release = {
-                'name': obj['name'],
-                'assets': list(map(lambda asset: (asset.get('name', 'unknown'), asset.get('download_count', 0)), obj['assets']))
-            }
-            result.append(release)
+        if 'name' in obj and 'assets' in obj:
+            for asset in obj['assets']:
+                if asset["name"].endswith(".tgz"):
+                    release = { 'name' : obj['name'], "asset" : { asset.get('name') : asset.get('download_count', 0)}}
+                    result.append(release)
     return result
 
 
@@ -36,10 +38,11 @@ def get_release_metrics():
     return parse_response(result)
 
 
-def send_release_metrics(metrics: dict):
+def send_release_metrics(metrics):
     for release in metrics:
-        send_metric(release['name'],"Chart downloads", dict(release['assets']))
-
+        _,provider,chart,_ = index.get_chart_info(release.get('name'))
+        if len(provider)>0:
+            send_metric(provider,f"{chart} downloads", release.get('asset'))
 
 def send_fail_metric(partner,chart,message):
 
@@ -60,14 +63,14 @@ def on_error(error,items):
     sys.exit(1)
 
 
-def send_metric(user,event,properties):
+def send_metric(partner,event,properties):
 
     analytics.write_key = os.getenv('SEGMENT_WRITE_KEY')
     analytics.on_error = on_error
 
-    analytics.track(user, event, properties)
+    analytics.track(partner, event, properties)
 
-    logging.info(f'Add track:\nuser: {user}\nevent:{event}\nproperties:{properties}')
+    logging.info(f'Add track:  user: {partner},  event:{event},  properties:{properties}')
 
 
 def main():
