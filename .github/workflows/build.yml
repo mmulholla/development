@@ -328,5 +328,5 @@ jobs:
             ve1/bin/metrics --metric-type=pull_request \
                             --chart=${{ steps.check_pr_content.outputs.chart-name-with-version }} \
                             --partner=${{ steps.check_pr_content.outputs.organization }} \
-                            --message=${{ steps.prepare_comment.outputs.error-message }}
+                            --message="${{ steps.prepare_comment.outputs.error-message }}"
           fi
