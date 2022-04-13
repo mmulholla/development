@@ -54,8 +54,8 @@ results:
     reason: Helm lint successful
   - check: v1.0/not-contain-csi-objects
     type: Mandatory
-    outcome: PASS
-    reason: CSI objects do not exist
+    outcome: FAIL
+    reason: CSI objects exist
   - check: v1.0/images-are-certified
     type: Mandatory
     outcome: PASS
