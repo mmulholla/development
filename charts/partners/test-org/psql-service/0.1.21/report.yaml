@@ -6,7 +6,7 @@ metadata:
         profile:
             VendorType: partner
             version: v1.0
-        chart-uri: src
+        chart-uri: https://github.com/mmulholla/development/blob/main/charts/partners/test-org/psql-service/0.1.9/psql-service-0.1.9.tgz?raw=true
         digest: sha256:7f2a63f5b653438b4dfbc83ccfac6ca2c58a49c9b25c216fc5491274442b617a
         digests:
             chart: sha256:7f2a63f5b653438b4dfbc83ccfac6ca2c58a49c9b25c216fc5491274442b617a
@@ -54,8 +54,8 @@ results:
     reason: Helm lint successful
   - check: v1.0/not-contain-csi-objects
     type: Mandatory
-    outcome: FAIL
-    reason: CSI objects exist
+    outcome: PASS
+    reason: CSI objects do not exist
   - check: v1.0/images-are-certified
     type: Mandatory
     outcome: PASS
@@ -78,6 +78,6 @@ results:
     reason: Kubernetes version specified
   - check: v1.0/chart-testing
     type: Mandatory
-    outcome: FAIL
-    reason: Chart testing failed
+    outcome: PASS
+    reason: Chart testing passed
 
