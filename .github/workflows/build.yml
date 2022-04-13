@@ -317,6 +317,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      -name: Print context
+       if: always()
+       run: echo "$GITHUB_CONTEXT"
+
       - name: Add metrics
         if: always() && steps.check_build_required.outputs.run-build == 'true'
         run: |
