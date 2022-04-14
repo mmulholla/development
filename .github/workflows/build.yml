@@ -334,8 +334,8 @@ jobs:
               echo "add PR run metric"
               ve1/bin/metrics --write-key=${WRITE_KEY} \
                               --metric-type=pull_request \
-                              --message="${{ steps.pr_comment.outputs.pr-message }}"
-                              --event=${{ toJSON(github.event) }}
+                              --message="${{ steps.pr_comment.outputs.pr-message }}" \
+                              --event="${{ toJSON(github.event) }}"
           else
               echo "Do not collect metrics, required segment write key is not set"
           fi

@@ -109,7 +109,7 @@ def main():
     with open("./pr/comment", "w") as fd:
         fd.write(msg)
 
-    print(f"::set-output name=pr-message::{errors}")
+    print(f"::set-output name=pr-message::{msg}")
 
 if __name__ == "__main__":
     main()
