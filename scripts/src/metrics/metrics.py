@@ -316,7 +316,7 @@ def main():
                         help="metric type, releases or pull_request")
     parser.add_argument("-m", "--message", dest="message", type=str, required=False,
                         help="message for metric")
-    parser.add_argument("-e", "----event", dest="event", type=str, required=False,
+    parser.add_argument("-e", "--event", dest="event", type=str, required=False,
                         help="github event")
     args = parser.parse_args()
 
