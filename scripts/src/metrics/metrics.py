@@ -226,7 +226,7 @@ def process_pr(write_key,message_file,pr_number,action):
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
     repo = g.get_repo("openshift-helm-charts/charts")
-    pr = repo.get_pull(pr_number)
+    pr = repo.get_pull(int(pr_number))
 
     pr_content,type,provider,chart,version = check_pr(pr)
     if pr_content != "not-chart":
