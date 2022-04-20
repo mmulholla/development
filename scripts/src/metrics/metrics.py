@@ -325,7 +325,7 @@ def main():
                         help="number of teh pr")
     parser.add_argument("-a", "--pr-action", dest="pr_action", type=str, required=False,
                         help="The event action of the pr")
-    parser.add_argument("-a", "--repository", dest="repository", type=str, required=False,
+    parser.add_argument("-r", "--repository", dest="repository", type=str, required=False,
                         help="The repository of the pr")
 
     args = parser.parse_args()
