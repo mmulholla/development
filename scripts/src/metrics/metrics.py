@@ -329,6 +329,13 @@ def main():
                         help="The repository of the pr")
 
     args = parser.parse_args()
+    print("Input arguments:")
+    print(f"   --write-key length : {len(args.write_key)}")
+    print(f"   --metric-type : {args.type}")
+    print(f"   --messsage-file : {args.message_file}")
+    print(f"   --pr-number : {args.pr_number}")
+    print(f"   --pr-action : {args.pr_action}")
+    print(f"   --repository : {args.repository}")
 
     if not args.write_key:
         logging.info("Error: Segment write key not set")
