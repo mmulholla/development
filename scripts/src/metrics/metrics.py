@@ -5,6 +5,7 @@ import requests
 import sys
 import analytics
 import os
+import re
 from github import Github
 
 sys.path.append('../')
