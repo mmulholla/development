@@ -332,12 +332,12 @@ jobs:
 
           if [ "${WRITE_KEY}" != "" ]; then
               echo "add PR run metric"
-              ve1/bin/metrics --write-key="${{ WRITE_KEY }}" \
+              ve1/bin/metrics --write-key="${WRITE_KEY}" \
                               --metric-type="pull_request" \
                               --message-file="${{ steps.pr_comment.outputs.message-file }}" \
                               --pr-number="${{ github.event.number }}" \
                               --pr-action="${{ github.event.action }}" \
-                              --repository="${{ GITHUB_REPOSITORY }}"
+                              --repository="${GITHUB_REPOSITORY}"
           else
               echo "Do not collect metrics, required segment write key is not set"
           fi
