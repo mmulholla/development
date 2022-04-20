@@ -316,8 +316,10 @@ def main():
                         help="metric type, releases or pull_request")
     parser.add_argument("-m", "--message", dest="message", type=str, required=False,
                         help="message for metric")
-    parser.add_argument("-e", "--event", dest="event", type=str, required=False,
-                        help="github event")
+    parser.add_argument("-n", "--pr_number", dest="pr_number", type=str, required=False,
+                        help="number of teh pr")
+    parser.add_argument("-a", "--pr_action", dest="pr_action", type=str, required=False,
+                        help="The event action of the pr")
     args = parser.parse_args()
 
     if not args.write_key:
@@ -325,7 +327,7 @@ def main():
         sys.exit(1)
 
     if args.type == "pull_request":
-        process_pr(args.write_key,args.message,args.event.number,args.event.action)
+        process_pr(args.write_key,args.message,args.pr_number,args.pr_action)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
 
