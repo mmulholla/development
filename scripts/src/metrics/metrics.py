@@ -222,11 +222,12 @@ def check_pr(pr):
     return get_pr_content(pr)
     
 
-def process_pr(write_key,message_file,pr_number,action):
+def process_pr(write_key,message_file,pr_number,action,repository):
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
-    repo = g.get_repo("openshift-helm-charts/charts")
+    repo = g.get_repo(repository)
     pr = repo.get_pull(int(pr_number))
+    print(f"pr content:\n{pr}")
 
     pr_content,type,provider,chart,version = check_pr(pr)
     if pr_content != "not-chart":
@@ -324,6 +325,9 @@ def main():
                         help="number of teh pr")
     parser.add_argument("-a", "--pr-action", dest="pr_action", type=str, required=False,
                         help="The event action of the pr")
+    parser.add_argument("-a", "--repository", dest="repository", type=str, required=False,
+                        help="The repository of the pr")
+
     args = parser.parse_args()
 
     if not args.write_key:
@@ -331,7 +335,7 @@ def main():
         sys.exit(1)
 
     if args.type == "pull_request":
-        process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action)
+        process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action,args.repository)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
 

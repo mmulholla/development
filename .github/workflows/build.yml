@@ -336,7 +336,8 @@ jobs:
                               --metric-type="pull_request" \
                               --message-file="${{ steps.pr_comment.outputs.message-file }}" \
                               --pr-number="${{ github.event.number }}" \
-                              --pr-action="${{ github.event.action }}"
+                              --pr-action="${{ github.event.action }}" \
+                              --repository=$GITHUB_REPOSITORY
           else
               echo "Do not collect metrics, required segment write key is not set"
           fi
