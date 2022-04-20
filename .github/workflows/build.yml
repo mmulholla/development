@@ -217,7 +217,7 @@ jobs:
           COMMUNITY_MANUAL_REVIEW: ${{ steps.verify_pr.outputs.community_manual_review_required }}
           OC_INSTALL_RESULT: ${{ steps.install-oc.conclusion }}
         run: |
-          python3 scripts/prepare_pr_comment.py ${{ steps.check_pr_content.outcome }} ${{ steps.verify_pr.conclusion }} ${{ github.repository }}
+          ve1/bin/pr-comment ${{ steps.check_pr_content.outcome }} ${{ steps.verify_pr.conclusion }} ${{ github.repository }}
 
       - name: Comment on PR
         if: ${{ always() && steps.check_build_required.outputs.run-build == 'true' }}

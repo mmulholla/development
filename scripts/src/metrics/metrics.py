@@ -10,8 +10,7 @@ from github import Github
 
 sys.path.append('../')
 from indexfile import index
-sys.path.append('../../')
-from src import prepare_pr_comment as pr_comment
+from pullrequest import prepare_pr_comment as pr_comment
 
 logging.basicConfig(level=logging.INFO)
 
