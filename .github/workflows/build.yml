@@ -334,7 +334,7 @@ jobs:
               echo "add PR run metric"
               ve1/bin/metrics --write-key=${WRITE_KEY} \
                               --metric-type="pull_request" \
-                              --message="${{ steps.pr_comment.outputs.pr-message }}" \
+                              --message-file="${{ steps.pr_comment.outputs.message-file }}" \
                               --pr-number="${{ github.event.number }}" \
                               --pr-action="${{ github.event.action }}"
           else

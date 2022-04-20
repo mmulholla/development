@@ -57,28 +57,30 @@ def send_release_metrics(write_key, downloads):
         for chart in metrics[provider]:
             send_metric(write_key,provider,f"{chart} downloads", metrics[provider][chart])
 
-def process_report_fails(message):
+def process_report_fails(message_file):
 
     fails = ""
     num_error_messages = 0
     error_messages = []
     checks_failed = []
-    message_lines = message.split("\n")
-    for message_line in message_lines:
-        message_line = message_line.strip()
-        if fails:
-            if "Error message(s)" in message_line:
-                num_error_messages = 1
-            elif num_error_messages <= int(fails):
-                logging.info(f"[INFO] add error message: {message_line.strip()}" )
-                error_messages.append(message_line.strip())
-                num_error_messages +=1
-            else:
-                break
-        elif "Number of checks failed" in message_line:
-            body_line_parts = message_line.split(":")
-            fails = body_line_parts[1].strip()
-            logging.info(f"Number of failures in report {fails}")
+
+    with open(message_file) as file:
+        message_lines = [line.rstrip() for line in file]
+        for message_line in message_lines:
+            message_line = message_line.strip()
+            if fails:
+                if "Error message(s)" in message_line:
+                    num_error_messages = 1
+                elif num_error_messages <= int(fails):
+                    logging.info(f"[INFO] add error message: {message_line.strip()}" )
+                    error_messages.append(message_line.strip())
+                    num_error_messages +=1
+                else:
+                    break
+            elif "Number of checks failed" in message_line:
+                body_line_parts = message_line.split(":")
+                fails = body_line_parts[1].strip()
+                logging.info(f"Number of failures in report {fails}")
 
     for error_message in error_messages:
         if ("Missing required annotations" in error_message
@@ -134,17 +136,19 @@ def process_comments(repo,pr):
 
     return num_builds
 
-def parse_message(message,pr_number):
-    report_result = "not-found"
-    if pr_comment.get_comment_header(pr_number) in message:
-        if pr_comment.get_verifier_errors_comment() in message:
-            report_result = "report-failure"
-        elif pr_comment.get_content_failure_message() in message:
-            report_result = "content-failure"
-        elif pr_comment.get_success_coment() in message:
-            report_result = "report-pass"
-        elif pr_comment.get_community_review_message() in message:
-            report_result = "community_review"
+def parse_message(message_file,pr_number):
+    with open(message_file, 'r') as file:
+        message = file.read()
+        report_result = "not-found"
+        if pr_comment.get_comment_header(pr_number) in message:
+            if pr_comment.get_verifier_errors_comment() in message:
+                report_result = "report-failure"
+            elif pr_comment.get_content_failure_message() in message:
+                report_result = "content-failure"
+            elif pr_comment.get_success_coment() in message:
+                report_result = "report-pass"
+            elif pr_comment.get_community_review_message() in message:
+                report_result = "community_review"
 
     return report_result
 
@@ -218,7 +222,7 @@ def check_pr(pr):
     return get_pr_content(pr)
     
 
-def process_pr(write_key,message,pr_number,action):
+def process_pr(write_key,message_file,pr_number,action):
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
     repo = g.get_repo("openshift-helm-charts/charts")
@@ -229,10 +233,10 @@ def process_pr(write_key,message,pr_number,action):
         if action == "opened":
             send_submission_metric(write_key,type,provider,chart,pr_number,pr_content)
 
-        pr_result = parse_message(message,pr_number)
+        pr_result = parse_message(message_file,pr_number)
         num_fails=0
         if pr_result == "report-failure":
-            num_fails,checks_failed = process_report_fails(message)
+            num_fails,checks_failed = process_report_fails(message_file)
             for check in checks_failed:
                 send_check_metric(write_key,type,provider,chart,pr_number,check)
         elif pr_result == "content-failure":
@@ -314,11 +318,11 @@ def main():
                         help="segment write key")
     parser.add_argument("-t", "--metric-type", dest="type", type=str, required=True,
                         help="metric type, releases or pull_request")
-    parser.add_argument("-m", "--message", dest="message", type=str, required=False,
+    parser.add_argument("-m", "--message-file", dest="message_file", type=str, required=False,
                         help="message for metric")
-    parser.add_argument("-n", "--pr_number", dest="pr_number", type=str, required=False,
+    parser.add_argument("-n", "--pr-number", dest="pr_number", type=str, required=False,
                         help="number of teh pr")
-    parser.add_argument("-a", "--pr_action", dest="pr_action", type=str, required=False,
+    parser.add_argument("-a", "--pr-action", dest="pr_action", type=str, required=False,
                         help="The event action of the pr")
     args = parser.parse_args()
 
@@ -327,7 +331,7 @@ def main():
         sys.exit(1)
 
     if args.type == "pull_request":
-        process_pr(args.write_key,args.message,args.pr_number,args.pr_action)
+        process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
 
