@@ -215,8 +215,8 @@ def check_pr(pr):
     
     ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
 
-    if pr.user_login in ignore_users or pr.draft or pr.base.ref != "main":
-        logging.info(f"Ignore pr, user: {pr.user_login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
+    if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
+        logging.info(f"Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
     return get_pr_content(pr)
