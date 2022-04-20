@@ -210,7 +210,7 @@ def get_pr_content(pr):
 
 def check_pr(pr):
     
-    ignore_users=["zonggen",,"dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
+    ignore_users=["zonggen","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     #ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
         print(f"Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
