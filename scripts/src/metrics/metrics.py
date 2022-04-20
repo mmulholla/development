@@ -1,7 +1,6 @@
 
 import argparse
 import itertools
-import logging
 import requests
 import sys
 import analytics
@@ -11,8 +10,6 @@ from github import Github
 sys.path.append('../')
 from indexfile import index
 from pullrequest import prepare_pr_comment as pr_comment
-
-logging.basicConfig(level=logging.INFO)
 
 def parse_response(response):
     result = []
@@ -31,7 +28,7 @@ def get_release_metrics():
         response = requests.get(
             f'https://api.github.com/repos/openshift-helm-charts/charts/releases?per_page=100&page={i}')
         if not 200 <= response.status_code < 300:
-            logging.error(f"unexpected response getting release data : {response.status_code} : {response.reason}")
+            print(f"[ERROR] unexpected response getting release data : {response.status_code} : {response.reason}")
             sys.exit(1)
         response_json = response.json()
         if len(response_json) == 0:
@@ -72,7 +69,7 @@ def process_report_fails(message_file):
                 if "Error message(s)" in message_line:
                     num_error_messages = 1
                 elif num_error_messages <= int(fails):
-                    logging.info(f"[INFO] add error message: {message_line.strip()}" )
+                    print(f"[INFO] add error message: {message_line.strip()}" )
                     error_messages.append(message_line.strip())
                     num_error_messages +=1
                 else:
@@ -80,7 +77,7 @@ def process_report_fails(message_file):
             elif "Number of checks failed" in message_line:
                 body_line_parts = message_line.split(":")
                 fails = body_line_parts[1].strip()
-                logging.info(f"Number of failures in report {fails}")
+                print(f"Number of failures in report {fails}")
 
     for error_message in error_messages:
         if ("Missing required annotations" in error_message
@@ -160,29 +157,29 @@ def get_pr_content(pr):
     # get the files in the PR
     pr_chart_submission_files = []
     for commit in commits:
-        logging.info(f"    commit: {commit.url}")
-        logging.info(f"    commit parents: {len(commit.parents)}")
+        print(f"    commit: {commit.url}")
+        print(f"    commit parents: {len(commit.parents)}")
         if len(commit.parents) < 2:
             files = commit.files
             for file in files:
-                logging.info(f"      file: {file.filename}")
-                logging.info(f"      file status: {file.status}")
+                print(f"      file: {file.filename}")
+                print(f"      file status: {file.status}")
                 if pattern.match(file.filename):
                     if file.status != "removed" and not file.filename in pr_chart_submission_files:
                         pr_chart_submission_files.append(file.filename)
                     elif file.status == "removed" and file.filename in pr_chart_submission_files:
                         pr_chart_submission_files.remove(file.filename)
                 else:
-                    logging.info(f'ignore non chart file : {file.filename}')
+                    print(f'ignore non chart file : {file.filename}')
 
     pr_content = "not-chart"
     if len(pr_chart_submission_files) > 0:
-        logging.info(f"    Found unique files: {len(pr_chart_submission_files)}")
+        print(f"    Found unique files: {len(pr_chart_submission_files)}")
         match = pattern.match(pr_chart_submission_files[0])
         type,org,chart,version = match.groups()
         if type == "partners":
             type = "partner"
-        logging.info(f"    type: {type},org: {org},chart: {chart},version: {version}")
+        print(f"    type: {type},org: {org},chart: {chart},version: {version}")
         tgz_found = False
         report_found = False
         src_found = False
@@ -216,7 +213,7 @@ def check_pr(pr):
     ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
 
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
-        logging.info(f"Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
+        print(f"Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
     return get_pr_content(pr)
@@ -248,7 +245,7 @@ def process_pr(write_key,message_file,pr_number,action,repository):
         if pr.merged_at:
 
             builds =  process_comments(repo,pr)
-            logging.info(f"    PR  build cycles : {builds}")
+            print(f"    PR  build cycles : {builds}")
             builds_out = str(builds)
             if builds > 5:
                 builds_out = "> 5"
@@ -297,8 +294,8 @@ def send_submission_metric(write_key,type,partner,chart,pr_number,pr_content):
     send_metric(write_key,id,"PR Submission",properties)
 
 def on_error(error,items):
-    logging.info("An error occurred creating metrics:", error)
-    logging.info("error with items:",items)
+    print("An error occurred creating metrics:", error)
+    print("error with items:",items)
     sys.exit(1)
 
 
@@ -307,7 +304,7 @@ def send_metric(write_key,id,event,properties):
     analytics.write_key = write_key
     analytics.on_error = on_error
 
-    logging.info(f'Add track:  id: {id},  event:{event},  properties:{properties}')
+    print(f'Add track:  id: {id},  event:{event},  properties:{properties}')
 
     #analytics.track(id, event, properties)
 
@@ -338,7 +335,7 @@ def main():
     print(f"   --repository : {args.repository}")
 
     if not args.write_key:
-        logging.info("Error: Segment write key not set")
+        print("Error: Segment write key not set")
         sys.exit(1)
 
     if args.type == "pull_request":
