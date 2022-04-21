@@ -57,68 +57,81 @@ def send_release_metrics(write_key, downloads):
 
 def process_report_fails(message_file):
 
-    fails = ""
+    fails = "0"
     num_error_messages = 0
     error_messages = []
     checks_failed = []
+    fails_started = False
+    check_failures = False
+    non_check_failures = False
 
     with open(message_file) as file:
         message_lines = [line.rstrip() for line in file]
         for message_line in message_lines:
-            message_line = message_line.strip()
-            if fails:
-                if "Error message(s)" in message_line:
-                    num_error_messages = 1
-                elif num_error_messages <= int(fails):
-                    print(f"[INFO] add error message: {message_line.strip()}" )
+            if not fails_started:
+                fails_started = pr_comment.get_verifier_errors_comment() in message_line
+            else:
+                if pr_comment.get_verifier_errors_trailer() in message_line:
+                    break;
+                elif "Number of checks failed" in message_line:
+                    body_line_parts = message_line.split(":")
+                    fails = body_line_parts[1].strip()
+                    print(f"Number of failures in report {fails}")
+                    check_failures = True
+                elif fails != "0":
+                    if "Error message(s)" in message_line:
+                        num_error_messages = 1
+                    elif num_error_messages <= int(fails):
+                        print(f"[INFO] add error message: {message_line.strip()}" )
+                        error_messages.append(message_line.strip())
+                        num_error_messages +=1
+                elif len(message_line) > 0:
+                    non_check_failures = True
                     error_messages.append(message_line.strip())
-                    num_error_messages +=1
-                else:
-                    break
-            elif "Number of checks failed" in message_line:
-                body_line_parts = message_line.split(":")
-                fails = body_line_parts[1].strip()
-                print(f"Number of failures in report {fails}")
 
-    for error_message in error_messages:
-        if ("Missing required annotations" in error_message
-                or
-                "Empty metadata in chart" in error_messages
-        ):
-            checks_failed.append("required-annotations-present")
-        elif "Chart test files do not exist" in error_message:
-            checks_failed.append("required-annotations-present")
-        elif "Chart test files do not exist" in error_message:
-            checks_failed.append("contains-test")
-        elif "API version is not V2, used in Helm 3" in error_message:
-            checks_failed.append("is-helm-v3")
-        elif "Values file does not exist" in error_message:
-            checks_failed.append("contains-values")
-        elif "Values schema file does not exist" in error_message:
-            checks_failed.append("contains-values-schema")
-        elif ("Kubernetes version is not specified" in error_message
-              or
-              "Error converting kubeVersion to an OCP range" in error_message
-        ):
-            checks_failed.append("has-kubeversion")
-        elif "Helm lint has failed" in error_message:
-            checks_failed.append("helm_lint")
-        elif ( "Failed to certify images" in error_message
-               or
-               "Image is not Red Hat certified" in error_message
-        ):
-            if "images-are-certified" not in checks_failed:
-                checks_failed.append("images-are-certified")
-        elif "Chart does not have a README" in error_message:
-            checks_failed.append("has-readme")
-        elif "Missing mandatory check" in error_messages:
-            checks_failed.append("missing-mandatory-check")
-        elif "Chart contains CRDs" in error_messages:
-            checks_failed.append("not-contains-crds")
-        elif "CSI objects exist" in error_message:
-            checks_failed.append("not-contain-csi-objects")
-        else:
-            checks_failed.append("chart-testing")
+    if check_failures:
+        for error_message in error_messages:
+            if ("Missing required annotations" in error_message
+                    or
+                    "Empty metadata in chart" in error_messages
+            ):
+                checks_failed.append("required-annotations-present")
+            elif "Chart test files do not exist" in error_message:
+                checks_failed.append("required-annotations-present")
+            elif "Chart test files do not exist" in error_message:
+                checks_failed.append("contains-test")
+            elif "API version is not V2, used in Helm 3" in error_message:
+                checks_failed.append("is-helm-v3")
+            elif "Values file does not exist" in error_message:
+                checks_failed.append("contains-values")
+            elif "Values schema file does not exist" in error_message:
+                checks_failed.append("contains-values-schema")
+            elif ("Kubernetes version is not specified" in error_message
+                  or
+                  "Error converting kubeVersion to an OCP range" in error_message
+            ):
+                checks_failed.append("has-kubeversion")
+            elif "Helm lint has failed" in error_message:
+                checks_failed.append("helm_lint")
+            elif ( "Failed to certify images" in error_message
+                   or
+                   "Image is not Red Hat certified" in error_message
+            ):
+                if "images-are-certified" not in checks_failed:
+                    checks_failed.append("images-are-certified")
+            elif "Chart does not have a README" in error_message:
+                checks_failed.append("has-readme")
+            elif "Missing mandatory check" in error_messages:
+                checks_failed.append("missing-mandatory-check")
+            elif "Chart contains CRDs" in error_messages:
+                checks_failed.append("not-contains-crds")
+            elif "CSI objects exist" in error_message:
+                checks_failed.append("not-contain-csi-objects")
+            else:
+                checks_failed.append("chart-testing")
+    elif non_check_failures:
+        fails="1"
+        checks_failed.append("other-non-check-failure")
 
     return int(fails),checks_failed
 
@@ -140,14 +153,19 @@ def parse_message(message_file,pr_number):
         report_result = "not-found"
         if pr_comment.get_comment_header(pr_number) in message:
             if pr_comment.get_verifier_errors_comment() in message:
+                print(f"[INFO] report failure matched with : {message}")
                 report_result = "report-failure"
             elif pr_comment.get_content_failure_message() in message:
+                print(f"[INFO] content failure matched with : {message}")
                 report_result = "content-failure"
             elif pr_comment.get_success_coment() in message:
+                print(f"[INFO] report pass matched with : {message}")
                 report_result = "report-pass"
             elif pr_comment.get_community_review_message() in message:
+                print(f"[INFO] community review matched with : {message}")
                 report_result = "community_review"
 
+    print(f"[INFO] report_result : {report_result}")
     return report_result
 
 def get_pr_content(pr):

@@ -16,6 +16,10 @@ def get_failure_comment():
 def get_verifier_errors_comment():
     return "[ERROR] The submitted chart has failed certification. Reason(s):"
 
+def get_verifier_errors_trailer():
+    return "Please run the [chart-verifier](https://github.com/redhat-certification/chart-verifier) \
+and ensure all mandatory checks pass."
+
 def prepare_failure_comment():
     msg = f"""\
 {get_failure_comment()}
@@ -29,8 +33,7 @@ link next to "CI / Chart Certification" job status towards the end of this page.
 
 {errors}
 
-Please run the [chart-verifier](https://github.com/redhat-certification/chart-verifier) \
-and ensure all mandatory checks pass.
+{get_verifier_errors_trailer()}
 
 """
     print(f"::set-output name=error-message::{errors}")
