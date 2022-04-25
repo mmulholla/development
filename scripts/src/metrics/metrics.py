@@ -1,6 +1,7 @@
 
 import argparse
 import itertools
+import json
 import requests
 import sys
 import analytics
@@ -68,6 +69,7 @@ def send_pull_request_metrics(write_key,repo):
 
     pull_requests = repo.get_pulls(state="open,closed")
     for pr in pull_requests:
+        start_rate = check_rate_limit(0)
         pr_content,type,provider,chart,version = check_pr(pr)
         if pr_content != "not-chart":
             pr_chart_submission_files = get_pr_files(pr)
@@ -84,10 +86,12 @@ def send_pull_request_metrics(write_key,repo):
                         partner_charts.append(chart)
             else:
                 charts_in_progress +=1
+        print(f"rate used to processing a pr: {check_rate_limit(start_rate)}")
 
     send_summary_metric(write_key,chart_submissions,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
 
 def get_pr_files(pr):
+    start_rate =  check_rate_limit(0)
     commits=pr.get_commits()
     pr_chart_submission_files = []
     for commit in commits:
@@ -99,6 +103,7 @@ def get_pr_files(pr):
                         pr_chart_submission_files.append(file.filename)
                     elif file.status == "removed" and file.filename in pr_chart_submission_files:
                         pr_chart_submission_files.remove(file.filename)
+    print(f"    rate limit used by get_pr_files: {check_rate_limit(start_rate)}")
     return pr_chart_submission_files
 
 
@@ -215,6 +220,7 @@ def parse_message(message_file,pr_number):
     return report_result
 
 def get_pr_content(pr):
+    start_rate = check_rate_limit(0)
 
     pr_content = "not-chart"
     pr_chart_submission_files = get_pr_files(pr)
@@ -249,18 +255,21 @@ def get_pr_content(pr):
         elif src_found:
             pr_content = "src only"
 
+        print(f"  rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
         return pr_content,type,org,chart,version
 
+    print(f"  rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
     return pr_content,"","","",""
 
 def check_pr(pr):
-    
+    start_rate = check_rate_limit(0)
     ignore_users=["zonggen","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     #ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
         print(f"[INFO] Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
+    print(f"     rate limit used by check_pr: {check_rate_limit(start_rate)}")
     return get_pr_content(pr)
     
 
@@ -357,6 +366,17 @@ def send_metric(write_key,id,event,properties):
 
     #analytics.track(id, event, properties)
 
+def check_rate_limit(before):
+    headers = {
+        'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
+    }
+    response = requests.get('https://api.github.com/rate_limit', headers=headers)
+    rates = json.loads(response)
+    if before > 0:
+        return int(rates["resources"]["core"]["used"]) - before
+    else:
+        return int(rates["resources"]["core"]["used"])
+
 
 
 def main():
@@ -388,33 +408,26 @@ def main():
         sys.exit(1)
 
 
-    headers = {
-        'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
-    }
-
-    response = requests.get('https://api.github.com/rate_limit', headers=headers)
-
-    print("rate limit before")
-    print(response.text)
+    print(f"rate limit before: {check_rate_limit(0)}")
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
     repo = g.get_repo("openshift-helm-charts/charts")
 
     try:
         if args.type == "pull_request":
+            start_rate = check_rate_limit(0)
             process_pr(args.write_key,repo,args.message_file,args.pr_number,args.pr_action,args.repository)
+            print(f"rate limit used to process subject pr: {check_rate_limit(start_rate)}")
+            start_rate = check_rate_limit(0)
             send_pull_request_metrics(args.write_key,repo)
+            print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
         else:
             send_release_metrics(args.write_key,get_release_metrics())
             send_pull_request_metrics(args.write_key,repo)
     except Exception as err:
         print(f"Exception collecting metrics: {err}")
 
-    response = requests.get('https://api.github.com/rate_limit', headers=headers)
-
-    print("rate limit after")
-    print(response.text)
-
+    print(f"rate limit after: {check_rate_limit(0)}")
 
 if __name__ == '__main__':
     main()
