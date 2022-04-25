@@ -57,7 +57,7 @@ def send_release_metrics(write_key, downloads):
         for chart in metrics[provider]:
             send_metric(write_key,provider,f"{chart} downloads", metrics[provider][chart])
 
-def send_pull_request_metrics(write_key):
+def send_pull_request_metrics(repo,write_key):
 
     chart_submissions = 0
     partners = []
@@ -66,8 +66,6 @@ def send_pull_request_metrics(write_key):
     charts_abandonded = 0
     charts_in_progress = 0
 
-    g = Github(os.environ.get("GITHUB_TOKEN"))
-    repo = g.get_repo("openshift-helm-charts/charts")
     pull_requests = repo.get_pulls(state="open,closed")
     for pr in pull_requests:
         pr_content,type,provider,chart,version = check_pr(pr)
@@ -265,10 +263,8 @@ def check_pr(pr):
     return get_pr_content(pr)
     
 
-def process_pr(write_key,message_file,pr_number,action,repository):
+def process_pr(write_key,repo,message_file,pr_number,action,repository):
 
-    g = Github(os.environ.get("GITHUB_TOKEN"))
-    repo = g.get_repo(repository)
     pr = repo.get_pull(int(pr_number))
 
     pr_content,type,provider,chart,version = check_pr(pr)
@@ -397,16 +393,24 @@ def main():
 
     response = requests.get('https://api.github.com/rate_limit', headers=headers)
 
+    print("rate limit before")
     print(response.text)
 
-    if args.type == "pull_request":
-        process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action,args.repository)
-    else:
-        send_release_metrics(args.write_key,get_release_metrics())
-        send_pull_request_metrics(args.write_key)
+    g = Github(os.environ.get("GITHUB_TOKEN"))
+    repo = g.get_user().get_repo("openshift-helm-charts/charts")
+
+    try:
+        if args.type == "pull_request":
+            process_pr(args.write_key,repo,args.message_file,args.pr_number,args.pr_action,args.repository)
+        else:
+            send_release_metrics(args.write_key,get_release_metrics())
+            send_pull_request_metrics(args.write_key,repo)
+    except Exception as err:
+        print(f"Exception collecting metrics: {err}")
 
     response = requests.get('https://api.github.com/rate_limit', headers=headers)
 
+    print("rate limit after")
     print(response.text)
 
 
