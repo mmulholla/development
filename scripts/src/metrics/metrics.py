@@ -12,6 +12,8 @@ sys.path.append('../')
 from indexfile import index
 from pullrequest import prepare_pr_comment as pr_comment
 
+file_pattern = re.compile(r"charts/([\w-]+)/([\w-]+)/([\w\.-]+)/([\w\.-]+)/.*")
+
 def parse_response(response):
     result = []
     for obj in response:
@@ -55,12 +57,60 @@ def send_release_metrics(write_key, downloads):
         for chart in metrics[provider]:
             send_metric(write_key,provider,f"{chart} downloads", metrics[provider][chart])
 
+def send_pull_request_metrics(write_key):
+
+    chart_submissions = 0
+    partners = []
+    partner_charts = []
+    charts_merged = 0
+    charts_abandonded = 0
+    charts_in_progress = 0
+
+    g = Github(os.environ.get("GITHUB_TOKEN"))
+    repo = g.get_repo("openshift-helm-charts/charts")
+    pull_requests = repo.get_pulls(state="open,closed")
+    for pr in pull_requests:
+        pr_content,type,provider,chart,version = check_pr(pr)
+        if pr_content != "not-chart":
+            pr_chart_submission_files = get_pr_files(pr,file_pattern)
+            if len(pr_chart_submission_files) > 0:
+                 chart_submissions += 1
+            if pr.closed_at and not pr.merged_at:
+                charts_abandonded += 1
+            elif pr.merged_at:
+                charts_merged += 1
+                if type == "partners":
+                    if provider not in partners:
+                        partners.append(provider)
+                    if chart not in partner_charts:
+                        partner_charts.append(chart)
+            else:
+                charts_in_progress +=1
+
+    send_summary_metric(write_key,chart_submissions,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
+
+def get_pr_files(pr):
+    commits=pr.get_commits()
+    pr_chart_submission_files = []
+    for commit  in commits:
+        if len(commit.parents) < 2:
+            files = commit.files
+            for file in files:
+                if file_pattern.match(file.filename):
+                    if file.status != "removed" and not file.filename in pr_chart_submission_files:
+                        pr_chart_submission_files.append(file.filename)
+                    elif file.status == "removed" and file.filename in pr_chart_submission_files:
+                        pr_chart_submission_files.remove(file.filename)
+    return pr_chart_submission_files
+
+
 def process_report_fails(message_file):
 
     fails = "0"
     num_error_messages = 0
     error_messages = []
     checks_failed = []
+
     fails_started = False
     check_failures = False
     non_check_failures = False
@@ -87,6 +137,7 @@ def process_report_fails(message_file):
                         num_error_messages +=1
                 elif len(message_line) > 0:
                     non_check_failures = True
+                    print(f"[INFO] non-check message: {message_line.strip()}" )
                     error_messages.append(message_line.strip())
 
     if check_failures:
@@ -170,31 +221,12 @@ def parse_message(message_file,pr_number):
 
 def get_pr_content(pr):
 
-    pattern = re.compile(r"charts/([\w-]+)/([\w-]+)/([\w\.-]+)/([\w\.-]+)/.*")
-    commits=pr.get_commits()
-
-    # get the files in the PR
-    pr_chart_submission_files = []
-    for commit in commits:
-        print(f"    commit: {commit.url}")
-        print(f"    commit parents: {len(commit.parents)}")
-        if len(commit.parents) < 2:
-            files = commit.files
-            for file in files:
-                print(f"      file: {file.filename}")
-                print(f"      file status: {file.status}")
-                if pattern.match(file.filename):
-                    if file.status != "removed" and not file.filename in pr_chart_submission_files:
-                        pr_chart_submission_files.append(file.filename)
-                    elif file.status == "removed" and file.filename in pr_chart_submission_files:
-                        pr_chart_submission_files.remove(file.filename)
-                else:
-                    print(f'ignore non chart file : {file.filename}')
-
     pr_content = "not-chart"
+    pr_chart_submission_files = get_pr_files(pr)
+
     if len(pr_chart_submission_files) > 0:
         print(f"    Found unique files: {len(pr_chart_submission_files)}")
-        match = pattern.match(pr_chart_submission_files[0])
+        match = file_pattern.match(pr_chart_submission_files[0])
         type,org,chart,version = match.groups()
         if type == "partners":
             type = "partner"
@@ -243,7 +275,6 @@ def process_pr(write_key,message_file,pr_number,action,repository):
     g = Github(os.environ.get("GITHUB_TOKEN"))
     repo = g.get_repo(repository)
     pr = repo.get_pull(int(pr_number))
-    print(f"pr content:\n{pr}")
 
     pr_content,type,provider,chart,version = check_pr(pr)
     if pr_content != "not-chart":
@@ -283,12 +314,17 @@ def process_pr(write_key,message_file,pr_number,action,repository):
             send_merge_metric(write_key,type,provider,chart,duration,pr_number,builds_out,pr_content)
 
 
+def send_summary_metric(write_key,num_merged,num_abandonned,num_in_progress,num_partners,num_charts):
+    properties = { "merged": num_merged, "abandonned" : num_abandonned, "in_progress" : num_in_progress,
+                   "partners": num_partners, "partner_charts" : num_charts}
+    id = f"helm-metric-summary"
+
 def send_outcome_metric(write_key,type,provider,chart,outcome,num_fails):
 
     properties = { "type": type, "provider": provider, "chart" : chart, "outcome" : outcome, "failures" :  num_fails}
-    id = f"helm-metric-{provider}"
+    id = f"helm-metric-all"
 
-    send_metric(write_key,id,"PR-outcome",properties)
+    send_metric(write_key,id,"PR-summary",properties)
 
 
 def send_check_metric(write_key,type,partner,chart,pr_number,check):
@@ -359,8 +395,10 @@ def main():
 
     if args.type == "pull_request":
         process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action,args.repository)
+        send_pull_request_metrics(args.write_key)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
+        send_pull_request_metrics(args.write_key)
 
 
 if __name__ == '__main__':
