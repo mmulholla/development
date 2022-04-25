@@ -72,7 +72,7 @@ def send_pull_request_metrics(write_key):
     for pr in pull_requests:
         pr_content,type,provider,chart,version = check_pr(pr)
         if pr_content != "not-chart":
-            pr_chart_submission_files = get_pr_files(pr,file_pattern)
+            pr_chart_submission_files = get_pr_files(pr)
             if len(pr_chart_submission_files) > 0:
                  chart_submissions += 1
             if pr.closed_at and not pr.merged_at:
