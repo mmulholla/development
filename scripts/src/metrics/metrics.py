@@ -92,7 +92,7 @@ def send_pull_request_metrics(write_key):
 def get_pr_files(pr):
     commits=pr.get_commits()
     pr_chart_submission_files = []
-    for commit  in commits:
+    for commit in commits:
         if len(commit.parents) < 2:
             files = commit.files
             for file in files:
@@ -204,16 +204,12 @@ def parse_message(message_file,pr_number):
         report_result = "not-found"
         if pr_comment.get_comment_header(pr_number) in message:
             if pr_comment.get_verifier_errors_comment() in message:
-                print(f"[INFO] report failure matched with : {message}")
                 report_result = "report-failure"
             elif pr_comment.get_content_failure_message() in message:
-                print(f"[INFO] content failure matched with : {message}")
                 report_result = "content-failure"
             elif pr_comment.get_success_coment() in message:
-                print(f"[INFO] report pass matched with : {message}")
                 report_result = "report-pass"
             elif pr_comment.get_community_review_message() in message:
-                print(f"[INFO] community review matched with : {message}")
                 report_result = "community_review"
 
     print(f"[INFO] report_result : {report_result}")
@@ -225,12 +221,11 @@ def get_pr_content(pr):
     pr_chart_submission_files = get_pr_files(pr)
 
     if len(pr_chart_submission_files) > 0:
-        print(f"    Found unique files: {len(pr_chart_submission_files)}")
         match = file_pattern.match(pr_chart_submission_files[0])
         type,org,chart,version = match.groups()
         if type == "partners":
             type = "partner"
-        print(f"    type: {type},org: {org},chart: {chart},version: {version}")
+        print(f"[INFO] Found PR: type: {type},org: {org},chart: {chart},version: {version}, number of files: {len(pr_chart_submission_files)}")
         tgz_found = False
         report_found = False
         src_found = False
@@ -264,7 +259,7 @@ def check_pr(pr):
     ignore_users=["zonggen","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     #ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
-        print(f"Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
+        print(f"[INFO] Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
     return get_pr_content(pr)
@@ -295,7 +290,7 @@ def process_pr(write_key,message_file,pr_number,action,repository):
         if pr.merged_at:
 
             builds =  process_comments(repo,pr)
-            print(f"    PR  build cycles : {builds}")
+            print(f"[INFO]    PR  build cycles : {builds}")
             builds_out = str(builds)
             if builds > 5:
                 builds_out = "> 5"
@@ -317,14 +312,16 @@ def process_pr(write_key,message_file,pr_number,action,repository):
 def send_summary_metric(write_key,num_merged,num_abandonned,num_in_progress,num_partners,num_charts):
     properties = { "merged": num_merged, "abandonned" : num_abandonned, "in_progress" : num_in_progress,
                    "partners": num_partners, "partner_charts" : num_charts}
-    id = f"helm-metric-summary"
+    id = "helm-metric-summary"
+
+    send_metric(write_key,id,"PR-summary",properties)
 
 def send_outcome_metric(write_key,type,provider,chart,outcome,num_fails):
 
     properties = { "type": type, "provider": provider, "chart" : chart, "outcome" : outcome, "failures" :  num_fails}
-    id = f"helm-metric-all"
+    id = f"helm-metric-{provider}"
 
-    send_metric(write_key,id,"PR-summary",properties)
+    send_metric(write_key,id,"PR-outcome",properties)
 
 
 def send_check_metric(write_key,type,partner,chart,pr_number,check):
@@ -359,7 +356,7 @@ def send_metric(write_key,id,event,properties):
     analytics.write_key = write_key
     analytics.on_error = on_error
 
-    print(f'Add track:  id: {id},  event:{event},  properties:{properties}')
+    print(f'[INFO] Add track:  id: {id},  event:{event},  properties:{properties}')
 
     #analytics.track(id, event, properties)
 
