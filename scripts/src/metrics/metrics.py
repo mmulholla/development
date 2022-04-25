@@ -119,13 +119,14 @@ def process_report_fails(message_file):
             if not fails_started:
                 fails_started = pr_comment.get_verifier_errors_comment() in message_line
             else:
+                if "[ERROR] Chart verifier report includes failures:" in message_line:
+                    check_failures = True
                 if pr_comment.get_verifier_errors_trailer() in message_line:
                     break;
                 elif "Number of checks failed" in message_line:
                     body_line_parts = message_line.split(":")
                     fails = body_line_parts[1].strip()
                     print(f"Number of failures in report {fails}")
-                    check_failures = True
                 elif fails != "0":
                     if "Error message(s)" in message_line:
                         num_error_messages = 1
@@ -133,7 +134,7 @@ def process_report_fails(message_file):
                         print(f"[INFO] add error message: {message_line.strip()}" )
                         error_messages.append(message_line.strip())
                         num_error_messages +=1
-                elif len(message_line) > 0:
+                elif not check_failures and len(message_line) > 0:
                     non_check_failures = True
                     print(f"[INFO] non-check message: {message_line.strip()}" )
                     error_messages.append(message_line.strip())
