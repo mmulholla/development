@@ -57,7 +57,7 @@ def send_release_metrics(write_key, downloads):
         for chart in metrics[provider]:
             send_metric(write_key,provider,f"{chart} downloads", metrics[provider][chart])
 
-def send_pull_request_metrics(repo,write_key):
+def send_pull_request_metrics(write_key,repo):
 
     chart_submissions = 0
     partners = []
