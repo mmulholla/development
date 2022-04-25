@@ -390,11 +390,24 @@ def main():
         print("Error: Segment write key not set")
         sys.exit(1)
 
+
+    headers = {
+        'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
+    }
+
+    response = requests.get('https://api.github.com/rate_limit', headers=headers)
+
+    print(response.text)
+
     if args.type == "pull_request":
         process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action,args.repository)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
         send_pull_request_metrics(args.write_key)
+
+    response = requests.get('https://api.github.com/rate_limit', headers=headers)
+
+    print(response.text)
 
 
 if __name__ == '__main__':
