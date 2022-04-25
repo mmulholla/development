@@ -392,7 +392,6 @@ def main():
 
     if args.type == "pull_request":
         process_pr(args.write_key,args.message_file,args.pr_number,args.pr_action,args.repository)
-        send_pull_request_metrics(args.write_key)
     else:
         send_release_metrics(args.write_key,get_release_metrics())
         send_pull_request_metrics(args.write_key)
