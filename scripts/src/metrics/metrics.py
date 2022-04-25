@@ -371,7 +371,7 @@ def check_rate_limit(before):
         'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
     }
     response = requests.get('https://api.github.com/rate_limit', headers=headers)
-    rates = json.loads(response)
+    rates = response.json()
     if before > 0:
         return int(rates["resources"]["core"]["used"]) - before
     else:
