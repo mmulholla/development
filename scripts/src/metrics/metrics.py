@@ -397,7 +397,7 @@ def main():
     print(response.text)
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
-    repo = g.get_user().get_repo("openshift-helm-charts/charts")
+    repo = g.get_repo("openshift-helm-charts/charts")
 
     try:
         if args.type == "pull_request":
