@@ -85,7 +85,7 @@ def send_pull_request_metrics(write_key,repo):
                         partner_charts.append(chart)
             else:
                 charts_in_progress +=1
-        print(f"[INFO] rate used for pr: {check_rate_limit(start_rate)}, total delta: {check_rate_limit(all_start_rate)} now at: {check_rate_limit(0)}")
+        print(f"[INFO] rate used for pr {pr.number}: {check_rate_limit(start_rate)}, total delta: {check_rate_limit(all_start_rate)} now at: {check_rate_limit(0)}")
 
     send_summary_metric(write_key,chart_submissions,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
 
