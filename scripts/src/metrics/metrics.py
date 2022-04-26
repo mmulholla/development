@@ -416,19 +416,20 @@ def main():
     print(f"rate limit before: {check_rate_limit(0)}")
 
     g = Github(os.environ.get("GITHUB_TOKEN"))
-    repo = g.get_repo("openshift-helm-charts/charts")
 
     try:
         if args.type == "pull_request":
+            repo_current = g.get_repo(args.repository)
             start_rate = check_rate_limit(0)
-            process_pr(args.write_key,repo,args.message_file,args.pr_number,args.pr_action,args.repository)
+            process_pr(args.write_key,repo_current,args.message_file,args.pr_number,args.pr_action,args.repository)
             print(f"rate limit used to process subject pr: {check_rate_limit(start_rate)}")
             # start_rate = check_rate_limit(0)
             #  send_pull_request_metrics(args.write_key,repo)
             # print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
         else:
+            repo_charts = g.get_repo("openshift-helm-charts/charts")
             send_release_metrics(args.write_key,get_release_metrics())
-            send_pull_request_metrics(args.write_key,repo)
+            send_pull_request_metrics(args.write_key,repo_charts)
     except Exception as err:
         print(f"Exception collecting metrics: {err}")
 
