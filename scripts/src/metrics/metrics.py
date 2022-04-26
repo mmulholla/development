@@ -64,8 +64,9 @@ def send_pull_request_metrics(write_key,repo):
     partners = []
     partner_charts = []
     charts_merged = 0
-    charts_abandonded = 0
+    charts_abandoned = 0
     charts_in_progress = 0
+    abandoned = []
 
     pull_requests = repo.get_pulls(state='all')
     for pr in pull_requests:
@@ -73,7 +74,9 @@ def send_pull_request_metrics(write_key,repo):
         if pr_content != "not-chart":
             chart_submissions += 1
             if pr.closed_at and not pr.merged_at:
-                charts_abandonded += 1
+                charts_abandoned += 1
+                print(f"[INFO] Abandoned PR: {pr.number} ")
+                abandoned.append(pr.number)
             elif pr.merged_at:
                 charts_merged += 1
                 if type == "partner":
@@ -84,7 +87,8 @@ def send_pull_request_metrics(write_key,repo):
             else:
                 charts_in_progress +=1
 
-    send_summary_metric(write_key,chart_submissions,charts_merged,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
+    print(f"[INFO] abandoned PRS: {abandoned}")
+    send_summary_metric(write_key,chart_submissions,charts_merged,charts_abandoned,charts_in_progress,len(partners),len(partner_charts))
 
 def get_pr_files(pr):
     files=pr.get_files()
@@ -296,8 +300,8 @@ def process_pr(write_key,repo,message_file,pr_number,action,repository):
             send_merge_metric(write_key,type,provider,chart,duration,pr_number,builds_out,pr_content)
 
 
-def send_summary_metric(write_key,num_submissions,num_merged,num_abandonned,num_in_progress,num_partners,num_charts):
-    properties = { "submissions": num_submissions, "merged": num_merged, "abandonned" : num_abandonned, "in_progress" : num_in_progress,
+def send_summary_metric(write_key,num_submissions,num_merged,num_abandoned,num_in_progress,num_partners,num_charts):
+    properties = { "submissions": num_submissions, "merged": num_merged, "abandoned" : num_abandoned, "in_progress" : num_in_progress,
                    "partners": num_partners, "partner_charts" : num_charts}
     id = "helm-metric-summary"
 
