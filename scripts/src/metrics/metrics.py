@@ -212,18 +212,17 @@ def parse_message(message_file,pr_number):
     return report_result
 
 def get_pr_content(pr):
-    start_rate = check_rate_limit(0)
 
     pr_content = "not-chart"
     pr_chart_submission_files = get_pr_files(pr)
-
+    start_rate = check_rate_limit(0)
     if len(pr_chart_submission_files) > 0:
         match = file_pattern.match(pr_chart_submission_files[0])
         if match:
             type,org,chart,version = match.groups()
             if type == "partners":
                 type = "partner"
-            print(f"[INFO] Found PR: type: {type},org: {org},chart: {chart},version: {version}, number of files: {len(pr_chart_submission_files)}")
+            print(f"[INFO] Found PR {pr.number}:{pr.user.login}: type: {type},org: {org},chart: {chart},version: {version}, #files: {len(pr_chart_submission_files)}, file match: {pr_chart_submission_files[0]}")
             tgz_found = False
             report_found = False
             src_found = False
@@ -256,8 +255,7 @@ def get_pr_content(pr):
 
 def check_and_get_pr_content(pr):
     start_rate = check_rate_limit(0)
-    ignore_users=["zonggen","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
-    #ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
+    ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
         print(f"[INFO] Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
@@ -269,12 +267,6 @@ def check_and_get_pr_content(pr):
 def process_pr(write_key,repo,message_file,pr_number,action,repository):
 
     pr = repo.get_pull(int(pr_number))
-
-    files = pr.get_files()
-    print(f'[INFO] files in PR: {files}')
-    for file in files:
-        print(f'[INFO] file in PR: {file.filename}')
-
 
     pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
     if pr_content != "not-chart":
