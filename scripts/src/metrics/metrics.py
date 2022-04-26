@@ -67,7 +67,7 @@ def send_pull_request_metrics(write_key,repo):
     charts_abandonded = 0
     charts_in_progress = 0
 
-    pull_requests = repo.get_pulls()
+    pull_requests = repo.get_pulls(state='all')
     for pr in pull_requests:
         pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
         if pr_content != "not-chart":
