@@ -194,19 +194,25 @@ def process_comments(repo,pr):
 
     return num_builds
 
-def parse_message(message_file,pr_number):
+def process_comment_file(message_file,pr_number):
+
     with open(message_file, 'r') as file:
         message = file.read()
-        report_result = "not-found"
-        if pr_comment.get_comment_header(pr_number) in message:
-            if pr_comment.get_verifier_errors_comment() in message:
-                report_result = "report-failure"
-            elif pr_comment.get_content_failure_message() in message:
-                report_result = "content-failure"
-            elif pr_comment.get_success_coment() in message:
-                report_result = "report-pass"
-            elif pr_comment.get_community_review_message() in message:
-                report_result = "community_review"
+
+    return parse_message(message,pr_number)
+
+def parse_message(message,pr_number):
+    report_result = "not-found"
+    if pr_comment.get_comment_header(pr_number) in message:
+        if pr_comment.get_verifier_errors_comment() in message:
+            report_result = "report-failure"
+        elif pr_comment.get_content_failure_message() in message:
+            report_result = "content-failure"
+        elif pr_comment.get_success_coment() in message:
+            report_result = "report-pass"
+        elif pr_comment.get_community_review_message() in message:
+            report_result = "community_review"
+
 
     print(f"[INFO] report_result : {report_result}")
     return report_result
@@ -267,7 +273,7 @@ def process_pr(write_key,repo,message_file,pr_number,action):
         if action == "opened":
             send_submission_metric(write_key,type,provider,chart,pr_number,pr_content)
 
-        pr_result = parse_message(message_file,pr_number)
+        pr_result = process_comment_file(message_file,pr_number)
         num_fails=0
         if pr_result == "report-failure":
             num_fails,checks_failed = process_report_fails(message_file)
