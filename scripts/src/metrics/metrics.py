@@ -219,36 +219,37 @@ def get_pr_content(pr):
 
     if len(pr_chart_submission_files) > 0:
         match = file_pattern.match(pr_chart_submission_files[0])
-        type,org,chart,version = match.groups()
-        if type == "partners":
-            type = "partner"
-        print(f"[INFO] Found PR: type: {type},org: {org},chart: {chart},version: {version}, number of files: {len(pr_chart_submission_files)}")
-        tgz_found = False
-        report_found = False
-        src_found = False
-        for file in pr_chart_submission_files:
-            filename = os.path.basename(file)
-            if filename == "report.yaml":
-                report_found = True
-            elif filename.endswith(".tgz"):
-                tgz_found = True
-            elif filename == "Chart.yaml" and len(pr_chart_submission_files) > 2:
-                src_found = True
+        if match:
+            type,org,chart,version = match.groups()
+            if type == "partners":
+                type = "partner"
+            print(f"[INFO] Found PR: type: {type},org: {org},chart: {chart},version: {version}, number of files: {len(pr_chart_submission_files)}")
+            tgz_found = False
+            report_found = False
+            src_found = False
+            for file in pr_chart_submission_files:
+                filename = os.path.basename(file)
+                if filename == "report.yaml":
+                    report_found = True
+                elif filename.endswith(".tgz"):
+                    tgz_found = True
+                elif filename == "Chart.yaml" and len(pr_chart_submission_files) > 2:
+                    src_found = True
 
-        if report_found:
-            if tgz_found:
-                pr_content = "report and tgz"
+            if report_found:
+                if tgz_found:
+                    pr_content = "report and tgz"
+                elif src_found:
+                    pr_content = "src and report"
+                else:
+                    pr_content = "report only"
+            elif tgz_found:
+                pr_content = "tgz only"
             elif src_found:
-                pr_content = "src and report"
-            else:
-                pr_content = "report only"
-        elif tgz_found:
-            pr_content = "tgz only"
-        elif src_found:
-            pr_content = "src only"
+                pr_content = "src only"
 
-        print(f">>>> rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
-        return pr_content,type,org,chart,version
+            print(f">>>> rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
+            return pr_content,type,org,chart,version
 
     print(f">>>> rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
     return pr_content,"","","",""
