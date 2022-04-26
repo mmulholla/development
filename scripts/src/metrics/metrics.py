@@ -14,6 +14,7 @@ from indexfile import index
 from pullrequest import prepare_pr_comment as pr_comment
 
 file_pattern = re.compile(r"charts/([\w-]+)/([\w-]+)/([\w\.-]+)/([\w\.-]+)/.*")
+ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu","rhrivero"]
 
 def parse_response(response):
     result = []
@@ -70,7 +71,7 @@ def send_pull_request_metrics(write_key,repo):
 
     pull_requests = repo.get_pulls(state='all')
     for pr in pull_requests:
-        pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
+        pr_content,type,provider,chart,version = check_and_get_pr_content(pr,repo)
         if pr_content != "not-chart":
             chart_submissions += 1
             if pr.closed_at and not pr.merged_at:
@@ -249,20 +250,19 @@ def get_pr_content(pr):
 
     return pr_content,"","","",""
 
-def check_and_get_pr_content(pr):
-    ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
-    if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
+def check_and_get_pr_content(pr,repo):
+    repo_name = repo.full_name
+    if (pr.user.login in ignore_users and pr.user.login not in repo_name) or pr.draft or pr.base.ref != "main":
         print(f"[INFO] Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
     return get_pr_content(pr)
     
 
-def process_pr(write_key,repo,message_file,pr_number,action,repository):
-
+def process_pr(write_key,repo,message_file,pr_number,action):
     pr = repo.get_pull(int(pr_number))
 
-    pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
+    pr_content,type,provider,chart,version = check_and_get_pr_content(pr,repo)
     if pr_content != "not-chart":
         if action == "opened":
             send_submission_metric(write_key,type,provider,chart,pr_number,pr_content)
@@ -392,17 +392,11 @@ def main():
         print("Error: Segment write key not set")
         sys.exit(1)
 
-
-    print(f"rate limit before: {check_rate_limit(0)}")
-
     g = Github(os.environ.get("GITHUB_TOKEN"))
 
     if args.type == "pull_request":
         repo_current = g.get_repo(args.repository)
-        process_pr(args.write_key,repo_current,args.message_file,args.pr_number,args.pr_action,args.repository)
-
-        repo_charts = g.get_repo("openshift-helm-charts/charts")
-        send_pull_request_metrics(args.write_key,repo_charts)
+        process_pr(args.write_key,repo_current,args.message_file,args.pr_number,args.pr_action)
     else:
         repo_charts = g.get_repo("openshift-helm-charts/charts")
         send_release_metrics(args.write_key,get_release_metrics())
