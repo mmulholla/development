@@ -91,17 +91,10 @@ def send_pull_request_metrics(write_key,repo):
 
 def get_pr_files(pr):
     start_rate =  check_rate_limit(0)
-    commits=pr.get_commits()
+    files=pr.get_files()
     pr_chart_submission_files = []
-    for commit in commits:
-        if len(commit.parents) < 2:
-            files = commit.files
-            for file in files:
-                if file_pattern.match(file.filename):
-                    if file.status != "removed" and not file.filename in pr_chart_submission_files:
-                        pr_chart_submission_files.append(file.filename)
-                    elif file.status == "removed" and file.filename in pr_chart_submission_files:
-                        pr_chart_submission_files.remove(file.filename)
+    for file in files:
+        pr_chart_submission_files.append(file.filename)
     print(f">>>> rate limit used by get_pr_files: {check_rate_limit(start_rate)}")
     return pr_chart_submission_files
 
@@ -279,7 +272,7 @@ def process_pr(write_key,repo,message_file,pr_number,action,repository):
     files = pr.get_files()
     print(f'[INFO] files in PR: {files}')
     for file in files:
-        print(f'[INFO] file in PR: {file}')
+        print(f'[INFO] file in PR: {file.filename}')
 
 
     pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
@@ -423,9 +416,10 @@ def main():
             start_rate = check_rate_limit(0)
             process_pr(args.write_key,repo_current,args.message_file,args.pr_number,args.pr_action,args.repository)
             print(f"rate limit used to process subject pr: {check_rate_limit(start_rate)}")
-            # start_rate = check_rate_limit(0)
-            #  send_pull_request_metrics(args.write_key,repo)
-            # print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
+            start_rate = check_rate_limit(0)
+            repo_charts = g.get_repo("openshift-helm-charts/charts")
+            send_pull_request_metrics(args.write_key,repo_charts)
+            print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
         else:
             repo_charts = g.get_repo("openshift-helm-charts/charts")
             send_release_metrics(args.write_key,get_release_metrics())
