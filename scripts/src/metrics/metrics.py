@@ -277,7 +277,9 @@ def process_pr(write_key,repo,message_file,pr_number,action,repository):
     pr = repo.get_pull(int(pr_number))
 
     files = pr.get_files()
-    print(f'[INFO] {len(files)} files the PR')
+    print(f'[INFO] files in PR: {files}')
+    for file in files:
+        print(f'[INFO] file in PR: {file}')
 
 
     pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
