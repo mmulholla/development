@@ -276,6 +276,10 @@ def process_pr(write_key,repo,message_file,pr_number,action,repository):
 
     pr = repo.get_pull(int(pr_number))
 
+    files = pr.get_files()
+    print(f'[INFO] {len(files)} files the PR')
+
+
     pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
     if pr_content != "not-chart":
         if action == "opened":
@@ -417,9 +421,9 @@ def main():
             start_rate = check_rate_limit(0)
             process_pr(args.write_key,repo,args.message_file,args.pr_number,args.pr_action,args.repository)
             print(f"rate limit used to process subject pr: {check_rate_limit(start_rate)}")
-            start_rate = check_rate_limit(0)
-            send_pull_request_metrics(args.write_key,repo)
-            print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
+            # start_rate = check_rate_limit(0)
+            #  send_pull_request_metrics(args.write_key,repo)
+            # print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
         else:
             send_release_metrics(args.write_key,get_release_metrics())
             send_pull_request_metrics(args.write_key,repo)
