@@ -188,7 +188,7 @@ def process_comments(repo,pr):
     comments = issue.get_comments()
     num_builds = 0
     for comment in comments:
-        report_result = parse_message(comment,pr.number)
+        report_result = parse_message(comment.body,pr.number)
         if report_result != "not-found":
             num_builds += 1
 
