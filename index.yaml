@@ -79,4 +79,25 @@ entries:
     urls:
     - https://github.com/mmulholla/development/blob/main/charts/partners/test-org/psql-service/0.1.9/psql-service-0.1.9.tgz?raw=true
     version: 0.1.21
-generated: '2022-04-13T17:53:06.802884+00:00'
+  - annotations:
+      charts.openshift.io/archs: x86_64
+      charts.openshift.io/digest: sha256:7f2a63f5b653438b4dfbc83ccfac6ca2c58a49c9b25c216fc5491274442b617a
+      charts.openshift.io/lastCertifiedTimestamp: '2021-07-07T15:53:41.199754-04:00'
+      charts.openshift.io/name: PSQL RedHat Demo Chart
+      charts.openshift.io/provider: RedHat
+      charts.openshift.io/providerType: partner
+      charts.openshift.io/submissionTimestamp: '2022-04-26T18:06:35.345018+00:00'
+      charts.openshift.io/supportURL: https://github.com/dperaza4dustbit/helm-chart
+      charts.openshift.io/supportedOpenShiftVersions: '>=4.7'
+      charts.openshift.io/testedOpenShiftVersion: '4.7'
+    apiVersion: v2
+    appVersion: 10.0.0
+    description: A Helm chart for a RedHat Certified PSQL
+    digest: fb5b8cf1038be04a6efc45000a8dd451756d0163b7820d773640275665f1cb4e
+    kubeVersion: '>=1.20.0'
+    name: psql-service
+    type: application
+    urls:
+    - http://github.com/src
+    version: 0.1.17
+generated: '2022-04-26T18:06:35.345018+00:00'
