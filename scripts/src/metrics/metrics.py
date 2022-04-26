@@ -67,10 +67,8 @@ def send_pull_request_metrics(write_key,repo):
     charts_abandonded = 0
     charts_in_progress = 0
 
-    all_start_rate = check_rate_limit(0)
-    pull_requests = repo.get_pulls(state="open,closed")
+    pull_requests = repo.get_pulls()
     for pr in pull_requests:
-        start_rate = check_rate_limit(0)
         pr_content,type,provider,chart,version = check_and_get_pr_content(pr)
         if pr_content != "not-chart":
             chart_submissions += 1
@@ -78,24 +76,21 @@ def send_pull_request_metrics(write_key,repo):
                 charts_abandonded += 1
             elif pr.merged_at:
                 charts_merged += 1
-                if type == "partners":
+                if type == "partner":
                     if provider not in partners:
                         partners.append(provider)
                     if chart not in partner_charts:
                         partner_charts.append(chart)
             else:
                 charts_in_progress +=1
-        print(f"[INFO] rate used for pr {pr.number}: {check_rate_limit(start_rate)}, total delta: {check_rate_limit(all_start_rate)} now at: {check_rate_limit(0)}")
 
-    send_summary_metric(write_key,chart_submissions,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
+    send_summary_metric(write_key,chart_submissions,charts_merged,charts_abandonded,charts_in_progress,len(partners),len(partner_charts))
 
 def get_pr_files(pr):
-    start_rate =  check_rate_limit(0)
     files=pr.get_files()
     pr_chart_submission_files = []
     for file in files:
         pr_chart_submission_files.append(file.filename)
-    print(f">>>> rate limit used by get_pr_files: {check_rate_limit(start_rate)}")
     return pr_chart_submission_files
 
 
@@ -215,7 +210,6 @@ def get_pr_content(pr):
 
     pr_content = "not-chart"
     pr_chart_submission_files = get_pr_files(pr)
-    start_rate = check_rate_limit(0)
     if len(pr_chart_submission_files) > 0:
         match = file_pattern.match(pr_chart_submission_files[0])
         if match:
@@ -247,20 +241,16 @@ def get_pr_content(pr):
             elif src_found:
                 pr_content = "src only"
 
-            print(f">>>> rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
             return pr_content,type,org,chart,version
 
-    print(f">>>> rate limit used by get_pr_content: {check_rate_limit(start_rate)}")
     return pr_content,"","","",""
 
 def check_and_get_pr_content(pr):
-    start_rate = check_rate_limit(0)
     ignore_users=["zonggen","mmulholla","dperaza4dustbit","openshift-helm-charts-bot","baijum","tisutisu"]
     if pr.user.login in ignore_users or pr.draft or pr.base.ref != "main":
         print(f"[INFO] Ignore pr, user: {pr.user.login}, draft: {pr.draft}, target_branch: {pr.base.ref}")
         return "not-chart","","","",""
 
-    print(f">>>> rate limit used by check_pr: {check_rate_limit(start_rate)}")
     return get_pr_content(pr)
     
 
@@ -306,8 +296,8 @@ def process_pr(write_key,repo,message_file,pr_number,action,repository):
             send_merge_metric(write_key,type,provider,chart,duration,pr_number,builds_out,pr_content)
 
 
-def send_summary_metric(write_key,num_merged,num_abandonned,num_in_progress,num_partners,num_charts):
-    properties = { "merged": num_merged, "abandonned" : num_abandonned, "in_progress" : num_in_progress,
+def send_summary_metric(write_key,num_submissions,num_merged,num_abandonned,num_in_progress,num_partners,num_charts):
+    properties = { "submissions": num_submissions, "merged": num_merged, "abandonned" : num_abandonned, "in_progress" : num_in_progress,
                    "partners": num_partners, "partner_charts" : num_charts}
     id = "helm-metric-summary"
 
@@ -405,13 +395,10 @@ def main():
 
     if args.type == "pull_request":
         repo_current = g.get_repo(args.repository)
-        start_rate = check_rate_limit(0)
         process_pr(args.write_key,repo_current,args.message_file,args.pr_number,args.pr_action,args.repository)
-        print(f"rate limit used to process subject pr: {check_rate_limit(start_rate)}")
-        start_rate = check_rate_limit(0)
+
         repo_charts = g.get_repo("openshift-helm-charts/charts")
         send_pull_request_metrics(args.write_key,repo_charts)
-        print(f"rate limit used to process all prs: {check_rate_limit(start_rate)}")
     else:
         repo_charts = g.get_repo("openshift-helm-charts/charts")
         send_release_metrics(args.write_key,get_release_metrics())
