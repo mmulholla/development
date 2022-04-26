@@ -123,7 +123,7 @@ def process_report_fails(message_file):
                 elif "Number of checks failed" in message_line:
                     body_line_parts = message_line.split(":")
                     fails = body_line_parts[1].strip()
-                    print(f"Number of failures in report {fails}")
+                    print(f"[INFO] Number of failures in report: {fails}")
                 elif fails != "0":
                     if "Error message(s)" in message_line:
                         num_error_messages = 1
@@ -351,18 +351,6 @@ def send_metric(write_key,id,event,properties):
 
     #analytics.track(id, event, properties)
 
-def check_rate_limit(before):
-    headers = {
-        'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
-    }
-    response = requests.get('https://api.github.com/rate_limit', headers=headers)
-    rates = response.json()
-    if before > 0:
-        return int(rates["resources"]["core"]["used"]) - before
-    else:
-        return int(rates["resources"]["core"]["used"])
-
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -401,8 +389,6 @@ def main():
         repo_charts = g.get_repo("openshift-helm-charts/charts")
         send_release_metrics(args.write_key,get_release_metrics())
         send_pull_request_metrics(args.write_key,repo_charts)
-
-    print(f"rate limit after: {check_rate_limit(0)}")
 
 if __name__ == '__main__':
     main()
