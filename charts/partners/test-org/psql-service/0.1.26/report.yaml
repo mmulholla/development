@@ -17,7 +17,7 @@ metadata:
         name: psql-service
         home: ""
         sources: []
-        version: 0.1.25
+        version: 0.1.26
         description: A Helm chart for a RedHat Certified PSQL
         keywords: []
         maintainers: []
