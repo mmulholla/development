@@ -316,7 +316,7 @@ def send_outcome_metric(write_key,type,provider,chart,outcome,num_fails):
     properties = { "type": type, "provider": provider, "chart" : chart, "outcome" : outcome, "failures" :  num_fails}
     id = f"helm-metric-{provider}"
 
-    send_metric(write_key,id,"PR-outcome",properties)
+    send_metric(write_key,id,"PR Outcome",properties)
 
 
 def send_check_metric(write_key,type,partner,chart,pr_number,check):
@@ -324,7 +324,7 @@ def send_check_metric(write_key,type,partner,chart,pr_number,check):
     properties = { "type": type, "provider": partner, "chart" : chart, "pr" : pr_number, "check" : check }
     id = f"helm-metric-{partner}"
 
-    send_metric(write_key,id,"PR-check-fails",properties)
+    send_metric(write_key,id,"PR Report Fails",properties)
 
 def send_merge_metric(write_key,type,partner,chart,duration,pr_number,num_builds,pr_content):
 
