@@ -55,8 +55,8 @@ results:
       reason: Values file exist
     - check: v1.0/contains-values-schema
       type: Mandatory
-      outcome: FAIL
-      reason: Values schema file does not exist
+      outcome: PASS
+      reason: Values schema file exists
     - check: v1.0/helm-lint
       type: Mandatory
       outcome: PASS
