@@ -6,7 +6,7 @@ entries:
       charts.openshift.io/lastCertifiedTimestamp: '2022-06-11T16:49:30.472769+00:00'
       charts.openshift.io/name: test
       charts.openshift.io/providerType: partner
-      charts.openshift.io/submissionTimestamp: '2022-06-16T17:13:28.953851+00:00'
+      charts.openshift.io/submissionTimestamp: '2022-06-16T17:25:50.231466+00:00'
       charts.openshift.io/supportedOpenShiftVersions: '>=4.5'
       charts.openshift.io/testedOpenShiftVersion: '4.9'
     apiVersion: v2
@@ -43,4 +43,4 @@ entries:
     urls:
     - https://github.com/redhat-certification/chart-verifier/blob/main/tests/charts/psql-service/0.1.9/psql-service-0.1.9.tgz?raw=true
     version: 0.1.9
-generated: '2022-06-16T17:13:28.953851+00:00'
+generated: '2022-06-16T17:25:50.231466+00:00'
