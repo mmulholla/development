@@ -29,3 +29,16 @@ Feature: Report only submission
         Examples:
             | vendor_type   | vendor    | message                                                                                     |
             | community     | redhat    | Community charts require maintainer review and approval, a review will be conducted shortly |
+
+    Scenario Outline: [HC-12-003] A partner or redhat associate submits report only with dash in chart version
+        Given the vendor <vendor> has a valid identity as <vendor_type>
+        And an error-free report is used in <specific_report_path>
+        When the user sends a pull request with the report
+        Then the user sees the pull request is merged
+        And the index.yaml file is updated with an entry for the submitted chart
+
+        Examples:
+            | vendor_type  | vendor    | specific_report_path |
+            | partners     | hashicorp | tests/data/HC-12/dash-in-version/report.yaml |
+            | redhat       | redhat    | tests/data/HC-12/dash-in-version/report.yaml |
+
