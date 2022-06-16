@@ -1,5 +1,26 @@
 apiVersion: v1
 entries:
+  test-org-du:
+  - annotations:
+      charts.openshift.io/digest: sha256:75ca3bacbe48389a2273a216571db8d996336dca73feb8005b10d68f490044f2
+      charts.openshift.io/lastCertifiedTimestamp: '2022-06-11T16:49:30.472769+00:00'
+      charts.openshift.io/name: test
+      charts.openshift.io/providerType: partner
+      charts.openshift.io/submissionTimestamp: '2022-06-16T16:15:21.042892+00:00'
+      charts.openshift.io/supportedOpenShiftVersions: '>=4.5'
+      charts.openshift.io/testedOpenShiftVersion: '4.9'
+    apiVersion: v2
+    appVersion: '0.1'
+    description: NF Service template.
+    digest: a96538a7d87eaf005e7a4b095b9fb314a96dfa2d570c283698b63ebbbd1a424f
+    kubeVersion: '>=1.18.0-0'
+    maintainers:
+    - email: srikanth.subbaramu@mavenir.com
+      name: ran ptf team
+    name: du
+    urls:
+    - https://github.com/ansvu/samplechart/releases/du_helmchart/du_helmchart_run.tgz
+    version: du5.0.326-53
   test-org-psql-service:
   - annotations:
       charts.openshift.io/archs: x86_64
@@ -22,4 +43,4 @@ entries:
     urls:
     - https://github.com/redhat-certification/chart-verifier/blob/main/tests/charts/psql-service/0.1.9/psql-service-0.1.9.tgz?raw=true
     version: 0.1.9
-generated: '2022-02-22T23:09:31.035811+00:00'
+generated: '2022-06-16T16:15:21.042892+00:00'
