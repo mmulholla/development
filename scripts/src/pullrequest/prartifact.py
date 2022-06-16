@@ -25,9 +25,11 @@ def get_modified_charts(api_url):
 
 def save_metadata(directory, vendor_label, chart, number):
     with open(os.path.join(directory, "vendor"), "w") as fd:
+        print(f"add {directory}/vendor as {vendor_label}")
         fd.write(vendor_label)
 
     with open(os.path.join(directory, "chart"), "w") as fd:
+        print(f"add {directory}/chart as {chart}")
         fd.write(chart)
 
     with open(os.path.join(directory, "NR"), "w") as fd:

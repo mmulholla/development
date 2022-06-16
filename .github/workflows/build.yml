@@ -232,6 +232,9 @@ jobs:
         if: ${{ always() && steps.check_build_required.outputs.run-build == 'true' }}
         run: |
           ve1/bin/pr-artifact --directory=./pr --pr-number=${{ github.event.number }} --api-url=${{ github.event.pull_request._links.self.href }}
+          vendor = fs.readFileSync('./pr/vendor').toString()
+          chart =  fs.readFileSync('./pr/chart').toString()
+          echo "vendor $vendor, chart $chart"
 
       - name: Prepare PR comment
         id: pr_comment
