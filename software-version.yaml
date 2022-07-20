@@ -1,0 +1,4 @@
+openshift:
+  release-client-version: '4.11.15'
+chart-verifier:
+  latest-manifest-digest: 'sha256:0344366a246a0f7590c2bae4536c01f15f20c6d802b4654ce96ac81047bc23f3'
