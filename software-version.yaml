@@ -1,4 +1,4 @@
 openshift:
-  release-client-version: '4.10.23'
+  release-client-version: '4.10.22'
 chart-verifier:
-  latest-manifest-digest: 'sha256:203fb8f82bdc80d304d3b2fdfa7ab8323a4747afc769e892c42799e9ac93e5f2'
+  latest-manifest-digest: 'sha256:203fb8f82bdc80d304d3b2fdfa7ab8323a4747afc769e892c42799e9ac93e5f3'
