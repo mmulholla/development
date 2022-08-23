@@ -28,3 +28,10 @@ To start the proecess:
         - Also creates a release if the development repository pull request is not required.
     1. Detects the incoming pull request against the development repository, merges it and creates a release. 
 
+# Test a new release:
+1. Create a fork of the charts repository or make sure the main branch of your existing fork is at the latest level.
+1. Create a fork of the development repository or make sure the main branch of your existing fork is at the latest level.
+1. Create a branch for the release as described above.
+1. Create a Pull request for the release branch against the main branch of your development fork.
+1. The release process as described above will be followed but using the forked repositories.
+1. If you need to re-run the test, roll back the main branches in each fork, delete the release created in the development fork and re-run.
