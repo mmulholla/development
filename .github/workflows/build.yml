@@ -207,7 +207,7 @@ jobs:
 
       - name: check-verifier-result
         id: check-verifier-result
-        if: ${{ always() && ${{ steps.run-verifier.outcome == 'failure' }}
+        if: ${{ always() && steps.run-verifier.outcome == 'failure' }}
         run: |
           error_message="An error occured when running the chart verifier to obtain a report"
           echo "::set-output name=verifier_error_message::$error_message"
