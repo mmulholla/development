@@ -60,7 +60,7 @@ def prepare_pr_content_failure_comment():
 def prepare_run_verifier_failure_comment():
     verifier_error_msg = os.environ.get("VERIFIER_ERROR_MESSAGE", "")
     print(f"::set-output name=error-message::{verifier_error_msg}")
-    msg = f"""\   
+    msg = f"""   
 {verifier_error_msg}
 
 {get_look_at_job_output_comment()}
