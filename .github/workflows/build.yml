@@ -207,7 +207,7 @@ jobs:
 
       - name: check-verifier-result
         id: check-verifier-result
-        if: ${{ steps.run-verifier.outcome != 'success' }}
+        if: ${{ always() && steps.run-verifier.outcome != 'success' }}
         env:
           VERIFIER_OUT: ${{ join(steps.run-verifier.outputs.*, '\n' )}}
         run: |
