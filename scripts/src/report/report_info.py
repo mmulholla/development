@@ -9,7 +9,7 @@ REPORT_ANNOTATIONS = "annotations"
 REPORT_RESULTS = "results"
 REPORT_DIGESTS = "digests"
 REPORT_METADATA = "metadata"
-SHA_ERROR = "Error: Digest in report did not match report content"
+SHA_ERROR = "Digest in report did not match report content"
 
 def _get_report_info(report_path, report_info_path,info_type, profile_type, profile_version):
 
