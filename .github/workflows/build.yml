@@ -77,9 +77,11 @@ jobs:
         run: |
           #set environemnt based on repository
           if [ $GITHUB_REPOSITORY == "openshift-helm-charts/charts" ]; then
+            echo "Use latest verifier image"
             echo "::set-output name=insecure_skip_tls_verify::false"
             echo "::set-output name=verifier-action-image::latest"
           else
+            echo "Use dev verifier image"
             echo "::set-output name=insecure_skip_tls_verify::true"
             echo "::set-output name=verifier-action-image::0.1.0"
           fi
