@@ -157,6 +157,7 @@ jobs:
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           source: github
+          skip_cache: true
           chart-verifier: ${{ steps.set-env.outputs.verifier-action-image }}
 
       - name: determine verify requirements
