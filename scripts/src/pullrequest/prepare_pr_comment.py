@@ -38,7 +38,7 @@ link next to "CI / Chart Certification" job status towards the end of this page.
 """
         print(f"::set-output name=error-message::{errors}")
     else:
-        print(f"::set-output name=error-message::{ get_failure_comment(}")
+        print(f"::set-output name=error-message::{get_failure_comment()}")
     return msg
 
 def prepare_success_comment():
