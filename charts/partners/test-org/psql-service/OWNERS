@@ -1,10 +1,9 @@
 chart:
-  name: vault
-  shortDescription: The official HashiCorp Helm chart for installing and configuring
-    Vault on OpenShift.
-publicPgpKey: null
+  name: psql-service
+  shortDescription: Lorem ipsum
+publicPgpKey:
 users:
-- githubUsername: mmulholla
+  - githubUsername: mmulholla
 vendor:
   label: test-org
-  name: HashiCorp
+  name: Balabit
