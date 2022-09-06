@@ -11,6 +11,19 @@ REPORT_DIGESTS = "digests"
 REPORT_METADATA = "metadata"
 SHA_ERROR = "Digest in report did not match report content"
 
+def write_error_log(*msg):
+    directory = os.environ.get("WORKFLOW_WORKING_DIRECTORY")
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+        with open(os.path.join(directory, "errors"), "w") as fd:
+            for line in msg:
+                fd.write(line)
+                fd.write("\n")
+
+    for line in msg:
+        print(line)
+
+
 def _get_report_info(report_path, report_info_path,info_type, profile_type, profile_version):
 
     if report_info_path and len(report_info_path) > 0:
@@ -46,20 +59,22 @@ def _get_report_info(report_path, report_info_path,info_type, profile_type, prof
             output = out.stdout.decode("utf-8")
 
         if SHA_ERROR in output:
-            print(f"[Error] {SHA_ERROR}")
+            msg = f"[Error] {SHA_ERROR}"
+            write_error_log(msg)
             sys.exit(1)
 
         try:
             report_out = json.loads(output)
         except BaseException as err:
-            print(f"[ERROR] loading report output: /n{output}")
-            print(f"[ERROR] exception was: {err=}, {type(err)=}")
+            msgs = []
+            msgs.append(f"[ERROR] loading report output: /n{output}")
+            msgs.append(f"[ERROR] exception was: {err=}, {type(err)=}")
+            write_error_log(*msgs)
             sys.exit(1)
 
-
-
     if not info_type in report_out:
-        print(f"Error extracting {info_type} from the report:", report_out.strip())
+        msg = f"Error extracting {info_type} from the report:", report_out.strip()
+        write_error_log(msg)
         sys.exit(1)
 
     if info_type == REPORT_ANNOTATIONS:
