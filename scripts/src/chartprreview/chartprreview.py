@@ -1,5 +1,6 @@
 import re
 import os
+import os.path
 import sys
 import argparse
 import subprocess
@@ -95,21 +96,24 @@ def check_owners_file_against_directory_structure(directory,username, category, 
 
 def verify_signature(directory, category, organization, chart, version):
     print("[INFO] Verify signature. %s, %s, %s" % (organization, chart, version))
-    data = open(os.path.join("charts", category, organization, chart, "OWNERS")).read()
-    out = yaml.load(data, Loader=Loader)
-    publickey = out.get('publicPgpKey')
-    if not publickey:
-        return
-    with open("public.key", "w") as fd:
-        fd.write(publickey)
-    out = subprocess.run(["gpg", "--import", "public.key"], capture_output=True)
-    print("[INFO]", out.stdout.decode("utf-8"))
-    print("[WARNING]", out.stderr.decode("utf-8"))
-    report = os.path.join("charts", category, organization, chart, version, "report.yaml")
     sign = os.path.join("charts", category, organization, chart, version, "report.yaml.asc")
-    out = subprocess.run(["gpg", "--verify", sign, report], capture_output=True)
-    print("[INFO]", out.stdout.decode("utf-8"))
-    print("[WARNING]", out.stderr.decode("utf-8"))
+    if os.path.exists(sign):
+        data = open(os.path.join("charts", category, organization, chart, "OWNERS")).read()
+        out = yaml.load(data, Loader=Loader)
+        publickey = out.get('publicPgpKey')
+        if not publickey:
+            return
+        with open("public.key", "w") as fd:
+            fd.write(publickey)
+        out = subprocess.run(["gpg", "--import", "public.key"], capture_output=True)
+        print("[INFO]", out.stdout.decode("utf-8"))
+        print("[WARNING]", out.stderr.decode("utf-8"))
+        report = os.path.join("charts", category, organization, chart, version, "report.yaml")
+        out = subprocess.run(["gpg", "--verify", sign, report], capture_output=True)
+        print("[INFO]", out.stdout.decode("utf-8"))
+        print("[WARNING]", out.stderr.decode("utf-8"))
+    else:
+        print(f"[INFO] Signed report not found: {sign}.")
 
 def match_checksum(directory,generated_report_info_path,category, organization, chart, version):
     print("[INFO] Check digests match. %s, %s, %s" % (organization, chart, version))
