@@ -350,8 +350,7 @@ jobs:
         with:
           tag_name: ${{ steps.release-charts.outputs.tag }}
           files: |
-              pr-branch/report.yaml
-              pr-branch/test-org-psql-service-0.1.11.tgz.key
+              ${{ steps.release-charts.outputs.release_files }}
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
