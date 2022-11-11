@@ -116,8 +116,8 @@ def prepare_chart_tarball_for_release(category, organization, chart, version,sig
         owners_path = os.path.join("charts", category, organization, chart, "OWNERS")
         key_in_owners = signedchart.get_pgp_key_from_owners(owners_path)
         if key_in_owners:
-            print("[INFO] Signed chart - add public key file")
             key_file_name = f"{new_chart_file_name}.key"
+            print(f"[INFO] Signed chart - add public key file : {key_file_name}")
             signedchart.create_public_key_file(key_in_owners,key_file_name)
             return key_file_name
     return ""
@@ -373,7 +373,7 @@ def main():
             prepare_chart_source_for_release(category, organization, chart, version)
         if chart_tarball_exists:
             signed_chart = signedchart.is_chart_signed(args.api_url,"")
-            key_file = prepare_chart_tarball_for_release(category, organization, chart, version, signed_chart)
+            public_key_file = prepare_chart_tarball_for_release(category, organization, chart, version, signed_chart)
 
         commit_hash = get_current_commit_sha()
         print("[INFO] Publish chart release to GitHub")
@@ -405,10 +405,11 @@ def main():
         print("[ERROR] Internal error: missing chart name with version (tag)")
         sys.exit(1)
     print(f"::set-output name=tag::{tag}")
+
     current_dir = os.getcwd()
-    release_files = f"{current_dir}/report.yaml"
-    if key_file:
-        release_files = f"{release_files}\n{current_dir}/{key_file}"
-    print(f"::set-output name=release_files::{release_files}")
+    print(f"::set-output name=report_file::{current_dir}/report.yaml")
+    if public_key_file:
+        print(f"[INFO] Add key file for release : {current_dir}/{public_key_file}")
+        print(f"::set-output name=public_key_file::{current_dir}/{public_key_file}")
 
     update_index_and_push(indexfile,indexdir, args.repository, branch, category, organization, chart, version, chart_url, chart_entry, args.pr_number, provider_delivery)

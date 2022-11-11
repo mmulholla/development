@@ -350,7 +350,8 @@ jobs:
         with:
           tag_name: ${{ steps.release-charts.outputs.tag }}
           files: |
-              ${{ steps.release-charts.outputs.release_files }}
+              ${{ steps.release-charts.outputs.report_file }}
+              ${{ steps.release-charts.outputs.public_key_file }}
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
