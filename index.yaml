@@ -121,4 +121,22 @@ entries:
     urls:
     - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.8/test-org-psql-service-0.1.8.tgz
     version: 0.1.8
-generated: '2022-11-14T19:00:52.407894+00:00'
+  - annotations:
+      charts.openshift.io/digest: sha256:b38f6510087c5106e53197af9c5e9cc2fecb49883c7faa6739977e1b72cdd3b7
+      charts.openshift.io/lastCertifiedTimestamp: '2022-11-14T19:08:10.779548+00:00'
+      charts.openshift.io/provider: Balabit
+      charts.openshift.io/providerType: partner
+      charts.openshift.io/submissionTimestamp: '2022-11-14T19:08:32.515659+00:00'
+      charts.openshift.io/supportedOpenShiftVersions: '>=4.7'
+      charts.openshift.io/testedOpenShiftVersion: '4.11'
+    apiVersion: v2
+    appVersion: 10.0.0
+    description: A Helm chart for a RedHat Certified PSQL
+    digest: c203d35a286c85579d9af99301ee2c87b8d3d06c2bc2c3404f57a3721e027711
+    kubeVersion: '>=1.20.0'
+    name: psql-service
+    type: application
+    urls:
+    - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.9/test-org-psql-service-0.1.9.tgz
+    version: 0.1.9
+generated: '2022-11-14T19:08:32.515659+00:00'
