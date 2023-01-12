@@ -335,6 +335,10 @@ def main():
     submitted_report_path = os.path.join("charts", category, organization, chart, version, "report.yaml")
 
     if os.path.exists(submitted_report_path):
+        data = open(submitted_report_path).read()
+        print("[INFO] Submitted report: ")
+        print(data)
+
         report_valid, message = verifier_report.validate(submitted_report_path)
         if not report_valid:
             msg = f"Submitted report is not valid: {message}"
