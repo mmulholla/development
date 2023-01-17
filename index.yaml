@@ -1,5 +1,24 @@
 apiVersion: v1
 entries:
+  redhat-psql-service:
+  - annotations:
+      charts.openshift.io/digest: sha256:73490aac64ab6c6b836699bee7c1b4430d3f0bf253039f6fd54d808f21ff92d0
+      charts.openshift.io/lastCertifiedTimestamp: '2023-01-17T20:08:46.137518+00:00'
+      charts.openshift.io/provider: Balabit
+      charts.openshift.io/providerType: community
+      charts.openshift.io/submissionTimestamp: '2023-01-17T20:09:08.894437+00:00'
+      charts.openshift.io/supportedOpenShiftVersions: '>=4.7'
+      charts.openshift.io/testedOpenShiftVersion: '4.11'
+    apiVersion: v2
+    appVersion: 10.0.0
+    description: A Helm chart for a RedHat Certified PSQL
+    digest: 650029655bd5af55af3ed9fcc8dbe636dc8f6de55d8da69f7c6336a40d626799
+    kubeVersion: '>= 1.20.0'
+    name: psql-service
+    type: application
+    urls:
+    - https://github.com/mmulholla/development/releases/download/redhat-psql-service-0.1.15/psql-service-0.1.15.tgz
+    version: 0.1.15
   test-org-psql-service:
   - annotations:
       charts.openshift.io/archs: x86_64
@@ -139,4 +158,4 @@ entries:
     urls:
     - https://github.com/mmulholla/development/releases/download/test-org-psql-service-0.1.14/psql-service-0.1.14.tgz
     version: 0.1.14
-generated: '2023-01-17T19:28:19.485894+00:00'
+generated: '2023-01-17T20:09:08.894437+00:00'
