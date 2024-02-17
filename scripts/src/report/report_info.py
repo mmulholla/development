@@ -9,7 +9,7 @@ REPORT_ANNOTATIONS = "annotations"
 REPORT_RESULTS = "results"
 REPORT_DIGESTS = "digests"
 REPORT_METADATA = "metadata"
-SHA_ERROR = "Digest in report did not match report content"
+SHA_ERROR = "digest in report did not match report content"
 
 def write_error_log(*msg):
     directory = os.environ.get("WORKFLOW_WORKING_DIRECTORY")
@@ -57,6 +57,8 @@ def _get_report_info(report_path, report_info_path,info_type, profile_type, prof
             else:
                 out = subprocess.run(["chart-verifier",command,info_type,os.path.abspath(report_path)],capture_output=True)
             output = out.stdout.decode("utf-8")
+
+        print(f"[INFO] report output: {output} ")
 
         if SHA_ERROR in output:
             msg = f"[ERROR] {SHA_ERROR}"
